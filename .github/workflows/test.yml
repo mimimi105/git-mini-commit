@@ -367,26 +367,18 @@ jobs:
               run: make build-all
 
             - name: Create release
-              uses: actions/create-release@v1
+              uses: softprops/action-gh-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   tag_name: v${{ github.run_number }}
-                  release_name: Release v${{ github.run_number }}
+                  name: Release v${{ github.run_number }}
                   body: |
                       This release includes:
                       - Bug fixes
                       - Performance improvements
                       - New features
+                  files: dist/*
                   draft: false
                   prerelease: false
-
-            - name: Upload release assets
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: dist/
-                  asset_name: git-mini-commit-${{ github.run_number }}
-                  asset_content_type: application/octet-stream
+                  fail_on_unmatched_files: false
