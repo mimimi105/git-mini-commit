@@ -107,15 +107,7 @@ jobs:
                   go-version: ${{ env.GO_VERSION }}
                   cache: true
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/go/pkg/mod
-                      ~/.cache/go-build
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+            # Cache disabled to avoid file conflicts
 
             - name: Install dependencies
               run: |
@@ -144,15 +136,7 @@ jobs:
                   go-version: ${{ env.GO_VERSION }}
                   cache: true
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/go/pkg/mod
-                      ~/.cache/go-build
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+            # Cache disabled to avoid file conflicts
 
             - name: Install dependencies
               run: |
@@ -180,15 +164,7 @@ jobs:
                   go-version: ${{ env.GO_VERSION }}
                   cache: true
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/go/pkg/mod
-                      ~/.cache/go-build
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+            # Cache disabled to avoid file conflicts
 
             - name: Install dependencies
               run: |
@@ -217,15 +193,7 @@ jobs:
                   go-version: ${{ env.GO_VERSION }}
                   cache: true
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/go/pkg/mod
-                      ~/.cache/go-build
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+            # Cache disabled to avoid file conflicts
 
             - name: Install dependencies
               run: |
@@ -258,15 +226,7 @@ jobs:
                   go-version: ${{ env.GO_VERSION }}
                   cache: true
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/go/pkg/mod
-                      ~/.cache/go-build
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+            # Cache disabled to avoid file conflicts
 
             - name: Install dependencies
               run: |
@@ -308,15 +268,7 @@ jobs:
                   go-version: ${{ env.GO_VERSION }}
                   cache: true
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/go/pkg/mod
-                      ~/.cache/go-build
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+            # Cache disabled to avoid file conflicts
 
             - name: Install dependencies
               run: |
@@ -332,53 +284,45 @@ jobs:
                   name: build-artifacts-${{ matrix.os }}
                   path: dist/
 
-    # リリース（mainブランチのみ）
-    release:
-        runs-on: ubuntu-latest
-        needs: [test, cross-platform-test, benchmark, lint, security, integration-test, performance, build]
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # リリース（mainブランチのみ）- 一時的に無効化
+    # release:
+    #     runs-on: ubuntu-latest
+    #     needs: [test, cross-platform-test, benchmark, lint, security, integration-test, performance, build]
+    #     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v4
 
-            - name: Set up Go
-              uses: actions/setup-go@v4
-              with:
-                  go-version: ${{ env.GO_VERSION }}
-                  cache: true
+    #         - name: Set up Go
+    #           uses: actions/setup-go@v4
+    #           with:
+    #               go-version: ${{ env.GO_VERSION }}
+    #               cache: true
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/go/pkg/mod
-                      ~/.cache/go-build
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+    #         # Cache disabled to avoid file conflicts
 
-            - name: Install dependencies
-              run: |
-                  go mod download
-                  go mod tidy
+    #         - name: Install dependencies
+    #           run: |
+    #               go mod download
+    #               go mod tidy
 
-            - name: Build for all platforms
-              run: make build-all
+    #         - name: Build for all platforms
+    #           run: make build-all
 
-            - name: Create release
-              uses: softprops/action-gh-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  tag_name: v${{ github.run_number }}
-                  name: Release v${{ github.run_number }}
-                  body: |
-                      This release includes:
-                      - Bug fixes
-                      - Performance improvements
-                      - New features
-                  files: dist/*
-                  draft: false
-                  prerelease: false
-                  fail_on_unmatched_files: false
+    #         - name: Create release
+    #           uses: softprops/action-gh-release@v1
+    #           env:
+    #               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #           with:
+    #               tag_name: v${{ github.run_number }}
+    #               name: Release v${{ github.run_number }}
+    #               body: |
+    #                   This release includes:
+    #                   - Bug fixes
+    #                   - Performance improvements
+    #                   - New features
+    #               files: dist/*
+    #               draft: false
+    #               prerelease: false
+    #               fail_on_unmatched_files: false
