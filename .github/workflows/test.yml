@@ -23,7 +23,7 @@ jobs:
                   go-version: ${{ matrix.go-version }}
 
             - name: Cache Go modules
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/go/pkg/mod
                   key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -34,6 +34,9 @@ jobs:
               run: |
                   go mod download
                   go mod tidy
+
+            - name: Build binary
+              run: go build -o git-mini-commit .
 
             - name: Run tests
               run: make test
@@ -58,7 +61,7 @@ jobs:
               run: make build-all
 
             - name: Upload coverage to Codecov
-              uses: codecov/codecov-action@v3
+              uses: codecov/codecov-action@v4
               with:
                   file: ./coverage.out
                   flags: unittests
@@ -80,6 +83,9 @@ jobs:
               run: |
                   go mod download
                   go mod tidy
+
+            - name: Build binary
+              run: go build -o git-mini-commit .
 
             - name: Run integration tests
               run: make integration-test
@@ -103,6 +109,9 @@ jobs:
               run: |
                   go mod download
                   go mod tidy
+
+            - name: Build binary
+              run: go build -o git-mini-commit .
 
             - name: Run security tests
               run: |
@@ -131,11 +140,14 @@ jobs:
                   go mod download
                   go mod tidy
 
+            - name: Build binary
+              run: go build -o git-mini-commit .
+
             - name: Run performance tests
               run: make perf-test
 
             - name: Upload performance results
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: performance-results
                   path: |
@@ -162,11 +174,14 @@ jobs:
                   go mod download
                   go mod tidy
 
+            - name: Build binary
+              run: go build -o git-mini-commit .
+
             - name: Build for all platforms
               run: make build-all
 
             - name: Upload build artifacts
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: build-artifacts-${{ matrix.os }}
                   path: dist/
@@ -188,6 +203,9 @@ jobs:
               run: |
                   go mod download
                   go mod tidy
+
+            - name: Build binary
+              run: go build -o git-mini-commit .
 
             - name: Build for all platforms
               run: make build-all

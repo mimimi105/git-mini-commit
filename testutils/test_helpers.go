@@ -207,6 +207,11 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	
 	binaryPath := filepath.Join(projectDir, "git-mini-commit")
 	
+	// バイナリが存在しない場合は、現在のディレクトリのバイナリを使用
+	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
+		binaryPath = "./git-mini-commit"
+	}
+	
 	cmd := exec.Command(binaryPath, args...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout

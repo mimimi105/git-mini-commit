@@ -37,12 +37,15 @@ func TestCLIIntegration(t *testing.T) {
 		t.Errorf("Expected 'Mini-commits' in output, but got: %s", output)
 	}
 
-	// 4. mini-commitのIDを抽出（作成時の出力から取得）
-	lines := strings.Split(output, "\n")
+	// 4. mini-commitのIDを抽出（listコマンドから取得）
+	listOutput := cli.AssertCommandSuccess(t, "list")
+	t.Logf("List output: %s", listOutput)
+	
+	lines := strings.Split(listOutput, "\n")
 	var miniCommitID string
 	for _, line := range lines {
-		if strings.Contains(line, "Created mini-commit:") {
-			parts := strings.Split(line, "Created mini-commit: ")
+		if strings.Contains(line, "ID:") {
+			parts := strings.Split(line, "ID: ")
 			if len(parts) > 1 {
 				miniCommitID = strings.TrimSpace(parts[1])
 				break
@@ -51,23 +54,10 @@ func TestCLIIntegration(t *testing.T) {
 	}
 
 	if miniCommitID == "" {
-		// 作成時の出力から取得できない場合は、listコマンドから取得
-		listOutput := cli.AssertCommandSuccess(t, "list")
-		lines = strings.Split(listOutput, "\n")
-		for _, line := range lines {
-			if strings.Contains(line, "ID:") {
-				parts := strings.Split(line, "ID: ")
-				if len(parts) > 1 {
-					miniCommitID = strings.TrimSpace(parts[1])
-					break
-				}
-			}
-		}
+		t.Fatalf("Failed to extract mini-commit ID from list output: %s", listOutput)
 	}
-
-	if miniCommitID == "" {
-		t.Fatalf("Failed to extract mini-commit ID from output: %s", output)
-	}
+	
+	t.Logf("Extracted mini-commit ID: %s", miniCommitID)
 
 	// 5. mini-commitの差分を表示
 	output = cli.AssertCommandSuccess(t, "show", miniCommitID)
@@ -185,12 +175,15 @@ func TestCLIPopCommand(t *testing.T) {
 		t.Errorf("Expected 'Created mini-commit' in output, but got: %s", output)
 	}
 
-	// 3. mini-commitのIDを抽出
-	lines := strings.Split(output, "\n")
+	// 3. mini-commitのIDを抽出（listコマンドから取得）
+	listOutput := cli.AssertCommandSuccess(t, "list")
+	t.Logf("List output: %s", listOutput)
+	
+	lines := strings.Split(listOutput, "\n")
 	var miniCommitID string
 	for _, line := range lines {
-		if strings.Contains(line, "Created mini-commit:") {
-			parts := strings.Split(line, "Created mini-commit: ")
+		if strings.Contains(line, "ID:") {
+			parts := strings.Split(line, "ID: ")
 			if len(parts) > 1 {
 				miniCommitID = strings.TrimSpace(parts[1])
 				break
@@ -199,8 +192,10 @@ func TestCLIPopCommand(t *testing.T) {
 	}
 
 	if miniCommitID == "" {
-		t.Fatalf("Failed to extract mini-commit ID from output: %s", output)
+		t.Fatalf("Failed to extract mini-commit ID from list output: %s", listOutput)
 	}
+	
+	t.Logf("Extracted mini-commit ID: %s", miniCommitID)
 
 	// 4. 新しいクリーンなリポジトリを作成
 	cleanRepo := testutils.NewTestGitRepo(t)
