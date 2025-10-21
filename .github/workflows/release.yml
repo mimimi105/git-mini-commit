@@ -1,83 +1,80 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - os: linux
-            arch: amd64
-            ext: ""
-          - os: linux
-            arch: arm64
-            ext: ""
-          - os: darwin
-            arch: amd64
-            ext: ""
-          - os: darwin
-            arch: arm64
-            ext: ""
-          - os: windows
-            arch: amd64
-            ext: ".exe"
-          - os: windows
-            arch: arm64
-            ext: ".exe"
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                include:
+                    - os: linux
+                      arch: amd64
+                      ext: ""
+                    - os: linux
+                      arch: arm64
+                      ext: ""
+                    - os: darwin
+                      arch: amd64
+                      ext: ""
+                    - os: darwin
+                      arch: arm64
+                      ext: ""
+                    - os: windows
+                      arch: amd64
+                      ext: ".exe"
+                    - os: windows
+                      arch: arm64
+                      ext: ".exe"
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.21"
+            - name: Set up Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: "1.21"
 
-      - name: Build
-        env:
-          GOOS: ${{ matrix.os }}
-          GOARCH: ${{ matrix.arch }}
-          CGO_ENABLED: 0
-        run: |
-          go build -ldflags="-s -w -X main.version=${GITHUB_REF_NAME}" -o git-mini-commit${{ matrix.ext }} .
+            - name: Build
+              env:
+                  GOOS: ${{ matrix.os }}
+                  GOARCH: ${{ matrix.arch }}
+                  CGO_ENABLED: 0
+              run: |
+                  go build -ldflags="-s -w -X main.version=${GITHUB_REF_NAME}" -o git-mini-commit${{ matrix.ext }} .
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: git-mini-commit-${{ matrix.os }}-${{ matrix.arch }}
-          path: git-mini-commit${{ matrix.ext }}
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: git-mini-commit-${{ matrix.os }}-${{ matrix.arch }}
+                  path: git-mini-commit${{ matrix.ext }}
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    release:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
 
-      - name: Create checksums
-        run: |
-          for file in git-mini-commit-*/git-mini-commit*; do
-            if [ -f "$file" ]; then
-              sha256sum "$file" > "$file.sha256"
-            fi
-          done
+            - name: Create checksums
+              run: |
+                  for file in git-mini-commit-*/git-mini-commit*; do
+                    if [ -f "$file" ]; then
+                      sha256sum "$file" > "$file.sha256"
+                    fi
+                  done
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            git-mini-commit-*/git-mini-commit*
-            git-mini-commit-*/git-mini-commit*.sha256
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: |
+                      git-mini-commit-*/git-mini-commit*
+                      git-mini-commit-*/git-mini-commit*.sha256
+                  generate_release_notes: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
