@@ -57,6 +57,7 @@ jobs:
     release:
         needs: build
         runs-on: ubuntu-latest
+        if: startsWith(github.ref, 'refs/tags/')
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -64,10 +65,16 @@ jobs:
             - name: Download all artifacts
               uses: actions/download-artifact@v4
 
+            - name: List downloaded files
+              run: |
+                  find . -name "git-mini-commit*" -type f
+
             - name: Create checksums
               run: |
                   for file in git-mini-commit-*/git-mini-commit*; do
-                    sha256sum "$file" > "$file.sha256"
+                    if [ -f "$file" ]; then
+                      sha256sum "$file" > "$file.sha256"
+                    fi
                   done
 
             - name: Create Release
@@ -86,6 +93,7 @@ jobs:
     npm:
         needs: build
         runs-on: ubuntu-latest
+        if: startsWith(github.ref, 'refs/tags/')
         steps:
             - name: Checkout
               uses: actions/checkout@v4
