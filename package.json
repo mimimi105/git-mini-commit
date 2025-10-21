@@ -1,0 +1,50 @@
+{
+    "name": "git-mini-commit",
+    "version": "0.1.0",
+    "description": "Git CLI extension for mini-commit workflow: local, small commits between staging and regular commit",
+    "main": "bin/git-mini-commit",
+    "bin": {
+        "git-mini-commit": "bin/git-mini-commit"
+    },
+    "scripts": {
+        "postinstall": "node install.js",
+        "prepublishOnly": "node scripts/build-binaries.js"
+    },
+    "files": [
+        "bin/",
+        "install.js",
+        "README.md",
+        "LICENSE"
+    ],
+    "keywords": [
+        "git",
+        "cli",
+        "commit",
+        "workflow",
+        "mini-commit",
+        "staging",
+        "development"
+    ],
+    "author": "Minoru Kinugasa",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/minoru-kinugasa-105/git-mini-commit.git"
+    },
+    "homepage": "https://github.com/minoru-kinugasa-105/git-mini-commit#readme",
+    "bugs": {
+        "url": "https://github.com/minoru-kinugasa-105/git-mini-commit/issues"
+    },
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "os": [
+        "darwin",
+        "linux",
+        "win32"
+    ],
+    "cpu": [
+        "x64",
+        "arm64"
+    ]
+}

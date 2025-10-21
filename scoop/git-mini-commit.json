@@ -1,0 +1,29 @@
+{
+    "version": "0.1.0",
+    "description": "Git CLI extension for mini-commit workflow: local, small commits between staging and regular commit",
+    "homepage": "https://github.com/minoru-kinugasa-105/git-mini-commit",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/download/v0.1.0/git-mini-commit-windows-amd64.exe",
+            "hash": "PLACEHOLDER_SHA256_WINDOWS_AMD64",
+            "bin": "git-mini-commit.exe"
+        },
+        "arm64": {
+            "url": "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/download/v0.1.0/git-mini-commit-windows-arm64.exe",
+            "hash": "PLACEHOLDER_SHA256_WINDOWS_ARM64",
+            "bin": "git-mini-commit.exe"
+        }
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/download/v$version/git-mini-commit-windows-amd64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/download/v$version/git-mini-commit-windows-arm64.exe"
+            }
+        }
+    }
+}

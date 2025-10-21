@@ -1,0 +1,7 @@
+git-mini-commit (0.1.0-1) unstable; urgency=medium
+
+  * Initial release of git-mini-commit
+  * Git CLI extension for mini-commit workflow
+  * Support for creating, listing, showing, popping, and dropping mini-commits
+
+ -- Minoru Kinugasa <minoru105ts@gmail.com>  Mon, 01 Jan 2025 12:00:00 +0000

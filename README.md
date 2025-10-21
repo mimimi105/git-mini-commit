@@ -158,6 +158,90 @@ MIT License © 2025 Minoru Kinugasa
 
 ---
 
+## Installation / インストール方法
+
+### 1. npm (推奨 - クロスプラットフォーム)
+
+```bash
+npm install -g git-mini-commit
+```
+
+### 2. Homebrew (macOS/Linux)
+
+```bash
+# ソースからビルド
+brew install minoru-kinugasa-105/git-mini-commit/git-mini-commit
+
+# またはバイナリ版
+brew install minoru-kinugasa-105/git-mini-commit/git-mini-commit-binary
+```
+
+### 3. Scoop (Windows)
+
+```bash
+scoop bucket add git-mini-commit https://github.com/minoru-kinugasa-105/git-mini-commit
+scoop install git-mini-commit
+```
+
+### 4. 直接ダウンロード (GitHub Release)
+
+```bash
+# Linux (AMD64)
+curl -L https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-linux-amd64 -o git-mini-commit
+chmod +x git-mini-commit
+sudo mv git-mini-commit /usr/local/bin/
+
+# macOS (Intel)
+curl -L https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-darwin-amd64 -o git-mini-commit
+chmod +x git-mini-commit
+sudo mv git-mini-commit /usr/local/bin/
+
+# macOS (Apple Silicon)
+curl -L https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-darwin-arm64 -o git-mini-commit
+chmod +x git-mini-commit
+sudo mv git-mini-commit /usr/local/bin/
+
+# Windows (PowerShell)
+Invoke-WebRequest -Uri "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-windows-amd64.exe" -OutFile "git-mini-commit.exe"
+```
+
+### 5. Debian/Ubuntu パッケージ
+
+```bash
+# 自動インストールスクリプト
+curl -fsSL https://raw.githubusercontent.com/minoru-kinugasa-105/git-mini-commit/main/scripts/install-debian.sh | bash
+
+# または手動で .deb パッケージをインストール
+wget https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit_0.1.0-1_amd64.deb
+sudo dpkg -i git-mini-commit_0.1.0-1_amd64.deb
+```
+
+### 6. ソースからビルド
+
+```bash
+git clone https://github.com/minoru-kinugasa-105/git-mini-commit.git
+cd git-mini-commit
+go build -o git-mini-commit .
+sudo mv git-mini-commit /usr/local/bin/
+```
+
+## 対応プラットフォーム / Supported Platforms
+
+| OS      | Architecture  | npm | Homebrew | Scoop | Direct Download | Debian |
+| ------- | ------------- | --- | -------- | ----- | --------------- | ------ |
+| Linux   | AMD64         | ✅  | ✅       | ❌    | ✅              | ✅     |
+| Linux   | ARM64         | ✅  | ✅       | ❌    | ✅              | ✅     |
+| macOS   | Intel         | ✅  | ✅       | ❌    | ✅              | ❌     |
+| macOS   | Apple Silicon | ✅  | ✅       | ❌    | ✅              | ❌     |
+| Windows | AMD64         | ✅  | ❌       | ✅    | ✅              | ❌     |
+| Windows | ARM64         | ✅  | ❌       | ✅    | ✅              | ❌     |
+
+## インストール後の確認
+
+```bash
+git mini-commit --version
+```
+
 ## Author / Contact
 
 - GitHub: https://github.com/minoru-kinugasa-105
