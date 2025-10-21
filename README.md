@@ -21,66 +21,67 @@ git-mini-commit は、Git のステージングエリアと通常コミットの
 - mini-commit を削除（drop）
 - 通常の git commit でまとめて反映
 
----
-
-## Installation / バイナリ
-
-### macOS (Homebrew)
-
-```
-brew install <your-tap>/git-mini-commit
-```
-
-### Linux / 手動ビルド
-
-Go 1.20+ が必要です。
-
-```
-git clone https://github.com/<your-user>/git-mini-commit.git
-cd git-mini-commit
-go build -o git-mini-commit ./cmd/git-mini-commit
-sudo mv git-mini-commit /usr/local/bin/
-```
-
----
-
 ## Usage / コマンド一覧
 
-- **Create mini-commit**
+### 基本的な使用方法
 
-    ```
+- **Create mini-commit（mini-commitを作成）**
+
+    ```bash
     git mini-commit -m "Refactor core module"
     ```
 
-- **List mini-commits**
+- **List mini-commits（mini-commit一覧表示）**
 
-    ```
+    ```bash
     git mini-commit list
     ```
 
-- **Show diff of a mini-commit**
+- **Show diff of a mini-commit（mini-commitの差分表示）**
 
-    ```
+    ```bash
     git mini-commit show <hash>
     ```
 
-- **Pop mini-commit back to staging**
+- **Pop mini-commit back to staging（mini-commitをステージングに戻す）**
 
-    ```
+    ```bash
     git mini-commit pop <hash>
     ```
 
-- **Drop mini-commit**
+- **Drop mini-commit（mini-commitを削除）**
 
-    ```
+    ```bash
     git mini-commit drop <hash>
     ```
 
-- **Integrate mini-commits into a normal commit**
+- **Integrate mini-commits into a normal commit（mini-commitを統合してコミット）**
 
-    ```
+    ```bash
     git commit -m "まとめコミット"
     ```
+
+### 使用例
+
+```bash
+# 1. ファイルをステージング
+git add src/main.go
+
+# 2. mini-commitとして保存
+git mini-commit -m "メイン関数のリファクタリング"
+
+# 3. 別のファイルをステージング
+git add src/utils.go
+
+# 4. 別のmini-commitとして保存
+git mini-commit -m "ユーティリティ関数の追加"
+
+# 5. mini-commit一覧を確認
+git mini-commit list
+
+# 6. すべてを統合してコミット（標準Gitコマンド）
+git commit -m "機能追加とリファクタリング"
+```
 
 ---
 
@@ -92,6 +93,48 @@ sudo mv git-mini-commit /usr/local/bin/
     - 作成日時
     - メッセージ
     - ステージング差分（patch形式）
+
+### ファイル命名規則
+
+```
+.git/mini-commits/
+├── index.json           # mini-commit一覧のインデックス
+├── <hash>.patch         # 各mini-commitのpatchファイル
+└── <hash>.patch         # (例: a1b2c3d4.patch)
+```
+
+- **ID生成**: `SHA1(patch内容 + タイムスタンプ)` で生成
+- **patchファイル**: `<hash>.patch` 形式で保存
+- **インデックス**: `index.json` で一覧管理
+
+## 制約事項 / Limitations
+
+- **GUI表示不可**: VSCode Gitタブ、GitHub Desktop、SourceTreeなどのGUIツールには表示されません
+- **ローカル限定**: `git push`や`git fetch`には影響しません
+- **標準Gitコマンドとの分離**: `git log`、`git status`などには表示されません
+- **統合は標準Gitコマンド**: `git commit`でmini-commitが統合されます
+- **統合順序**: 作成順（古いものから新しいものへ）で統合されます
+
+## 差分確認方法 / Diff Inspection
+
+mini-commitの差分をより詳細に確認する方法:
+
+```bash
+# 1. mini-commitの一覧を表示
+git mini-commit list
+
+# 2. 特定のmini-commitの差分を表示
+git mini-commit show <hash>
+
+# 3. patchファイルを直接確認（上級者向け）
+cat .git/mini-commits/<hash>.patch
+
+# 4. patchの統計情報を確認
+git mini-commit show <hash> | git apply --stat
+
+# 5. patchを一時的に適用して確認
+git mini-commit show <hash> | git apply --check
+```
 
 ---
 
@@ -116,4 +159,5 @@ MIT License © 2025 Minoru Kinugasa
 ---
 
 ## Author / Contact
+
 - GitHub: https://github.com/minoru-kinugasa-105
