@@ -77,6 +77,9 @@ jobs:
                       git-mini-commit-*/git-mini-commit*
                       git-mini-commit-*/git-mini-commit*.sha256
                   generate_release_notes: true
+                  draft: false
+                  prerelease: false
+                  fail_on_unmatched_files: false
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -127,9 +130,9 @@ jobs:
                     "license": "MIT",
                     "repository": {
                       "type": "git",
-                      "url": "https://github.com/minoru-kinugasa-105/git-mini-commit.git"
+                      "url": "https://github.com/minoru-kinugasa-105/mini-commit.git"
                     },
-                    "homepage": "https://github.com/minoru-kinugasa-105/git-mini-commit#readme"
+                    "homepage": "https://github.com/minoru-kinugasa-105/mini-commit#readme"
                   }
                   EOF
 
@@ -158,9 +161,22 @@ jobs:
                   }
                   EOF
 
-            - name: Publish to npm
+            - name: Check npm package
               run: |
                   cd npm-package
-                  npm publish
+                  ls -la
+                  cat package.json
+                  npm pack --dry-run
+
+            - name: Publish to npm
+              if: ${{ secrets.NPM_TOKEN != '' }}
+              run: |
+                  cd npm-package
+                  npm publish --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Skip npm publish (no token)
+              if: ${{ secrets.NPM_TOKEN == '' }}
+              run: |
+                  echo "NPM_TOKEN not set, skipping npm publish"
