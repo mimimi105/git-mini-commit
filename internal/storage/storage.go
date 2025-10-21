@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"git-mini-commit/internal/types"
@@ -20,6 +21,7 @@ const (
 // Storage mini-commitのストレージ管理
 type Storage struct {
 	basePath string
+	mutex    sync.RWMutex
 }
 
 // NewStorage 新しいストレージインスタンスを作成
@@ -42,6 +44,9 @@ func NewStorage() (*Storage, error) {
 
 // SaveMiniCommit mini-commitを保存
 func (s *Storage) SaveMiniCommit(mc *types.MiniCommit) error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
 	// インデックスファイルのパス
 	// indexPath := filepath.Join(s.basePath, IndexFile)
 	
@@ -70,11 +75,16 @@ func (s *Storage) SaveMiniCommit(mc *types.MiniCommit) error {
 
 // LoadMiniCommits すべてのmini-commitを読み込み
 func (s *Storage) LoadMiniCommits() (types.MiniCommitList, error) {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
 	return s.loadIndex()
 }
 
 // GetMiniCommit 指定されたIDのmini-commitを取得
 func (s *Storage) GetMiniCommit(id string) (*types.MiniCommit, error) {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+	
 	index, err := s.loadIndex()
 	if err != nil {
 		return nil, err
@@ -91,6 +101,9 @@ func (s *Storage) GetMiniCommit(id string) (*types.MiniCommit, error) {
 
 // DeleteMiniCommit 指定されたIDのmini-commitを削除
 func (s *Storage) DeleteMiniCommit(id string) error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	
 	index, err := s.loadIndex()
 	if err != nil {
 		return err

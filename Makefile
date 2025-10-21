@@ -1,0 +1,176 @@
+# git-mini-commit Makefile
+
+# 変数定義
+BINARY_NAME=git-mini-commit
+VERSION?=0.1.0
+BUILD_TIME=$(shell date +%Y-%m-%dT%H:%M:%S)
+GIT_COMMIT=$(shell git rev-parse --short HEAD)
+LDFLAGS=-ldflags "-X main.Version=$(VERSION) -X main.BuildTime=$(BUILD_TIME) -X main.GitCommit=$(GIT_COMMIT)"
+
+# デフォルトターゲット
+.PHONY: all
+all: build
+
+# ビルド
+.PHONY: build
+build:
+	@echo "Building $(BINARY_NAME)..."
+	go build $(LDFLAGS) -o $(BINARY_NAME) .
+
+# テスト実行
+.PHONY: test
+test:
+	@echo "Running tests..."
+	GIT_MINI_COMMIT_PROJECT_DIR=$(shell pwd) go test -v ./...
+
+# テストカバレッジ
+.PHONY: test-coverage
+test-coverage:
+	@echo "Running tests with coverage..."
+	GIT_MINI_COMMIT_PROJECT_DIR=$(shell pwd) go test -v -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated: coverage.html"
+
+# ベンチマークテスト
+.PHONY: benchmark
+benchmark:
+	@echo "Running benchmarks..."
+	GIT_MINI_COMMIT_PROJECT_DIR=$(shell pwd) go test -bench=. -benchmem ./...
+
+# リント
+.PHONY: lint
+lint:
+	@echo "Running linters..."
+	golangci-lint run
+
+# フォーマット
+.PHONY: fmt
+fmt:
+	@echo "Formatting code..."
+	go fmt ./...
+
+# 依存関係の整理
+.PHONY: tidy
+tidy:
+	@echo "Tidying dependencies..."
+	go mod tidy
+
+# 依存関係の更新
+.PHONY: update-deps
+update-deps:
+	@echo "Updating dependencies..."
+	go get -u ./...
+	go mod tidy
+
+# クリーンアップ
+.PHONY: clean
+clean:
+	@echo "Cleaning up..."
+	rm -f $(BINARY_NAME)
+	rm -f coverage.out coverage.html
+	rm -rf dist/
+
+# インストール
+.PHONY: install
+install: build
+	@echo "Installing $(BINARY_NAME)..."
+	sudo mv $(BINARY_NAME) /usr/local/bin/
+
+# アンインストール
+.PHONY: uninstall
+uninstall:
+	@echo "Uninstalling $(BINARY_NAME)..."
+	sudo rm -f /usr/local/bin/$(BINARY_NAME)
+
+# クロスコンパイル
+.PHONY: build-all
+build-all:
+	@echo "Building for all platforms..."
+	mkdir -p dist
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-linux-amd64 .
+	GOOS=linux GOARCH=arm64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-linux-arm64 .
+	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-darwin-amd64 .
+	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-darwin-arm64 .
+	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-windows-amd64.exe .
+
+# 統合テスト
+.PHONY: integration-test
+integration-test:
+	@echo "Running integration tests..."
+	GIT_MINI_COMMIT_PROJECT_DIR=$(shell pwd) go test -v -tags=integration ./cmd/...
+
+# ストレステスト
+.PHONY: stress-test
+stress-test:
+	@echo "Running stress tests..."
+	GIT_MINI_COMMIT_PROJECT_DIR=$(shell pwd) go test -v -tags=stress ./cmd/...
+
+# セキュリティテスト
+.PHONY: security-test
+security-test:
+	@echo "Running security tests..."
+	gosec ./...
+
+# ドキュメント生成
+.PHONY: docs
+docs:
+	@echo "Generating documentation..."
+	godoc -http=:6060
+
+# リリース準備
+.PHONY: release
+release: clean build-all
+	@echo "Preparing release..."
+	@echo "Version: $(VERSION)"
+	@echo "Build time: $(BUILD_TIME)"
+	@echo "Git commit: $(GIT_COMMIT)"
+
+# 開発環境セットアップ
+.PHONY: dev-setup
+dev-setup:
+	@echo "Setting up development environment..."
+	go mod download
+	go mod tidy
+	@echo "Development environment ready!"
+
+# テストデータ生成
+.PHONY: test-data
+test-data:
+	@echo "Generating test data..."
+	@echo "This would generate test data for integration tests"
+
+# パフォーマンステスト
+.PHONY: perf-test
+perf-test:
+	@echo "Running performance tests..."
+	go test -v -bench=. -benchmem -cpuprofile=cpu.prof -memprofile=mem.prof ./...
+
+# プロファイル分析
+.PHONY: profile
+profile:
+	@echo "Analyzing profiles..."
+	go tool pprof cpu.prof
+	go tool pprof mem.prof
+
+# ヘルプ
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  build          - Build the binary"
+	@echo "  test           - Run tests"
+	@echo "  test-coverage  - Run tests with coverage"
+	@echo "  benchmark      - Run benchmarks"
+	@echo "  lint           - Run linters"
+	@echo "  fmt            - Format code"
+	@echo "  tidy           - Tidy dependencies"
+	@echo "  clean          - Clean up build artifacts"
+	@echo "  install        - Install binary"
+	@echo "  uninstall      - Uninstall binary"
+	@echo "  build-all      - Build for all platforms"
+	@echo "  integration-test - Run integration tests"
+	@echo "  stress-test    - Run stress tests"
+	@echo "  security-test  - Run security tests"
+	@echo "  docs           - Generate documentation"
+	@echo "  release        - Prepare release"
+	@echo "  dev-setup      - Setup development environment"
+	@echo "  help           - Show this help"
