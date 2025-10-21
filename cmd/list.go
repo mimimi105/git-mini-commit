@@ -15,18 +15,18 @@ var listCmd = &cobra.Command{
 	Long:  `Display a list of all saved mini-commits.`,
 	Args:  cobra.ExactArgs(0),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// Gitリポジトリかチェック
+		// Check if it's a Git repository
 		if !git.IsGitRepository() {
 			return fmt.Errorf("not a git repository")
 		}
 
-		// ストレージを初期化
+		// Initialize storage
 		storage, err := storage.NewStorage()
 		if err != nil {
 			return fmt.Errorf("failed to initialize storage: %v", err)
 		}
 
-		// mini-commit一覧を取得
+		// Get mini-commit list
 		miniCommits, err := storage.LoadMiniCommits()
 		if err != nil {
 			return fmt.Errorf("failed to load mini-commits: %v", err)
@@ -37,7 +37,7 @@ var listCmd = &cobra.Command{
 			return nil
 		}
 
-		// 一覧を表示
+		// Display list
 		fmt.Printf("Mini-commits (%d):\n\n", len(miniCommits))
 		for i, mc := range miniCommits {
 			fmt.Printf("%d. ID: %s\n", i+1, mc.ID[:8])

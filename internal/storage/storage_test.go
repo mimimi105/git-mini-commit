@@ -334,7 +334,7 @@ func TestClearAllMiniCommits(t *testing.T) {
 	// patchファイルが削除されているかチェック
 	patch1Path := filepath.Join(storage.basePath, mc1.ID+".patch")
 	patch2Path := filepath.Join(storage.basePath, mc2.ID+".patch")
-	
+
 	if _, err := os.Stat(patch1Path); !os.IsNotExist(err) {
 		t.Errorf("Expected patch file 1 to be deleted")
 	}
@@ -439,7 +439,7 @@ func TestStorageConcurrency(t *testing.T) {
 	// 複数のgoroutineで同時にmini-commitを作成
 	done := make(chan bool, 10)
 	successCount := 0
-	
+
 	for i := 0; i < 10; i++ {
 		go func(i int) {
 			patch := "diff --git a/test.txt b/test.txt\nnew file mode 100644\nindex 0000000..3b18e51\n--- /dev/null\n+++ b/test.txt\n@@ -0,0 +1 @@\n+Hello, World!\n"
@@ -449,13 +449,13 @@ func TestStorageConcurrency(t *testing.T) {
 				CreatedAt: time.Now(),
 				Patch:     patch,
 			}
-			
+
 			if err := storage.SaveMiniCommit(mc); err != nil {
 				// 並行処理での競合は許容する
 				done <- false
 				return
 			}
-			
+
 			done <- true
 		}(i)
 	}

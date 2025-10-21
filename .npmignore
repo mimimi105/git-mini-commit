@@ -1,0 +1,36 @@
+# Source code (not needed for npm package)
+cmd/
+internal/
+testutils/
+*.go
+go.mod
+go.sum
+main.go
+
+# Build artifacts
+builds/
+git-mini-commit
+
+# Development files
+.github/
+scripts/
+debian/
+Formula/
+scoop/
+Makefile*
+*.md
+!README.md
+
+# Test files
+*_test.go
+testutils/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

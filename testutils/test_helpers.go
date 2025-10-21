@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -13,7 +14,7 @@ import (
 
 // TestGitRepo テスト用のGitリポジトリ管理
 type TestGitRepo struct {
-	RepoPath string
+	RepoPath    string
 	OriginalDir string
 }
 
@@ -46,7 +47,7 @@ func NewTestGitRepo(t *testing.T) *TestGitRepo {
 	exec.Command("git", "config", "user.email", "test@example.com").Run()
 
 	return &TestGitRepo{
-		RepoPath: repoPath,
+		RepoPath:    repoPath,
 		OriginalDir: originalDir,
 	}
 }
@@ -55,7 +56,7 @@ func NewTestGitRepo(t *testing.T) *TestGitRepo {
 func (r *TestGitRepo) Cleanup() {
 	// 元のディレクトリに戻る
 	os.Chdir(r.OriginalDir)
-	
+
 	// 一時ディレクトリを削除
 	os.RemoveAll(r.RepoPath)
 }
@@ -120,13 +121,13 @@ func NewTestStorage(t *testing.T) *TestStorage {
 func (s *TestStorage) CreateTestMiniCommit(t *testing.T, message, patch string) string {
 	// 簡易的なID生成
 	id := fmt.Sprintf("test-%d", time.Now().UnixNano())
-	
+
 	// patchファイルを作成
 	patchPath := filepath.Join(s.BasePath, id+".patch")
 	if err := os.WriteFile(patchPath, []byte(patch), 0644); err != nil {
 		t.Fatalf("Failed to create patch file: %v", err)
 	}
-	
+
 	return id
 }
 
@@ -152,31 +153,39 @@ func (s *TestStorage) AssertMiniCommitCount(t *testing.T, expected int) {
 	if err != nil {
 		t.Fatalf("Failed to read mini-commits directory: %v", err)
 	}
-	
+
 	patchCount := 0
 	for _, file := range files {
 		if strings.HasSuffix(file.Name(), ".patch") {
 			patchCount++
 		}
 	}
-	
+
 	if patchCount != expected {
 		t.Errorf("Expected %d mini-commits, but got %d", expected, patchCount)
 	}
 }
 
 // TestCLI テスト用CLI実行
-type TestCLI struct{}
+type TestCLI struct {
+	repo *TestGitRepo
+}
 
 // NewTestCLI テスト用CLIを作成
 func NewTestCLI(t *testing.T) *TestCLI {
 	return &TestCLI{}
 }
 
+// SetRepo テスト用リポジトリを設定
+func (c *TestCLI) SetRepo(repo *TestGitRepo) {
+	c.repo = repo
+}
+
 // RunCommand CLIコマンドを実行
 func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	// 元のプロジェクトディレクトリのバイナリを使用
 	// 環境変数から元のディレクトリを取得するか、固定パスを使用
+	// 環境変数から元のプロジェクトディレクトリを取得
 	projectDir := os.Getenv("GIT_MINI_COMMIT_PROJECT_DIR")
 	if projectDir == "" {
 		// 環境変数が設定されていない場合は、現在のディレクトリから遡って探す
@@ -184,15 +193,25 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 		if err != nil {
 			return "", "", err
 		}
-		
+
 		// 現在のディレクトリから遡ってgit-mini-commitバイナリを探す
 		for {
+			// Windows環境では .exe 拡張子を考慮
 			binaryPath := filepath.Join(wd, "git-mini-commit")
 			if _, err := os.Stat(binaryPath); err == nil {
 				projectDir = wd
 				break
 			}
-			
+
+			// Windows環境での .exe 拡張子をチェック
+			if runtime.GOOS == "windows" {
+				binaryPathExe := filepath.Join(wd, "git-mini-commit.exe")
+				if _, err := os.Stat(binaryPathExe); err == nil {
+					projectDir = wd
+					break
+				}
+			}
+
 			parent := filepath.Dir(wd)
 			if parent == wd {
 				break
@@ -200,21 +219,51 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 			wd = parent
 		}
 	}
-	
+
 	if projectDir == "" {
 		return "", "", fmt.Errorf("git-mini-commit binary not found")
 	}
-	
+
+	// Windows環境では .exe 拡張子を考慮
 	binaryPath := filepath.Join(projectDir, "git-mini-commit")
-	
+	if runtime.GOOS == "windows" {
+		binaryPath = filepath.Join(projectDir, "git-mini-commit.exe")
+	}
+
+	if _, err := os.Stat(binaryPath); err != nil {
+		// Windows環境でのデバッグ情報を追加
+		if runtime.GOOS == "windows" {
+			return "", "", fmt.Errorf("git-mini-commit binary not found at %s: %v (GOOS: %s)", binaryPath, err, runtime.GOOS)
+		}
+		return "", "", fmt.Errorf("git-mini-commit binary not found at %s: %v", binaryPath, err)
+	}
+
 	cmd := exec.Command(binaryPath, args...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
-	
-	err := cmd.Run()
-	
-	return stdout.String(), stderr.String(), err
+
+	// テスト用のストレージディレクトリを設定
+	if c.repo != nil {
+		// ストレージディレクトリを明示的に設定
+		storageDir := filepath.Join(c.repo.RepoPath, ".git-mini-commit")
+		// Windows環境ではパス区切り文字を正規化
+		if runtime.GOOS == "windows" {
+			storageDir = filepath.ToSlash(storageDir)
+		}
+
+		// 環境変数を設定
+		env := os.Environ()
+		env = append(env, "GIT_MINI_COMMIT_STORAGE_DIR="+storageDir)
+		cmd.Env = env
+
+		// テスト用ディレクトリで実行
+		cmd.Dir = c.repo.RepoPath
+	}
+
+	runErr := cmd.Run()
+
+	return stdout.String(), stderr.String(), runErr
 }
 
 // AssertCommandSuccess コマンドが成功することを確認
@@ -253,7 +302,7 @@ func (c *TestCLI) AssertOutputNotContains(t *testing.T, output, unexpected strin
 
 // TestFile テスト用ファイル管理
 type TestFile struct {
-	Path string
+	Path    string
 	Content string
 }
 
@@ -262,9 +311,9 @@ func NewTestFile(t *testing.T, path, content string) *TestFile {
 	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		t.Fatalf("Failed to create test file %s: %v", path, err)
 	}
-	
+
 	return &TestFile{
-		Path: path,
+		Path:    path,
 		Content: content,
 	}
 }
@@ -283,7 +332,7 @@ func (f *TestFile) AssertContent(t *testing.T, expected string) {
 	if err != nil {
 		t.Fatalf("Failed to read test file %s: %v", f.Path, err)
 	}
-	
+
 	if string(content) != expected {
 		t.Errorf("Expected file content to be '%s', but got '%s'", expected, string(content))
 	}

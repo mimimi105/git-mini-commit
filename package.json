@@ -1,6 +1,6 @@
 {
     "name": "git-mini-commit",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Git CLI extension for mini-commit workflow: local, small commits between staging and regular commit",
     "main": "bin/git-mini-commit",
     "bin": {
@@ -29,11 +29,11 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/minoru-kinugasa-105/git-mini-commit.git"
+        "url": "https://github.com/mimimi105/git-mini-commit.git"
     },
-    "homepage": "https://github.com/minoru-kinugasa-105/git-mini-commit#readme",
+    "homepage": "https://github.com/mimimi105/git-mini-commit#readme",
     "bugs": {
-        "url": "https://github.com/minoru-kinugasa-105/git-mini-commit/issues"
+        "url": "https://github.com/mimimi105/git-mini-commit/issues"
     },
     "engines": {
         "node": ">=14.0.0"

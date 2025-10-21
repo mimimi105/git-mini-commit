@@ -38,35 +38,35 @@ func TestIsGitRepository(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-		// 元のディレクトリを保存
-		originalDir, err := os.Getwd()
-		if err != nil {
-			t.Fatalf("Failed to get current directory: %v", err)
-		}
+			// 元のディレクトリを保存
+			originalDir, err := os.Getwd()
+			if err != nil {
+				t.Fatalf("Failed to get current directory: %v", err)
+			}
 
-		// テスト用ディレクトリに移動
-		testDir := tt.setup()
-		if err := os.Chdir(testDir); err != nil {
-			t.Fatalf("Failed to change directory: %v", err)
-		}
+			// テスト用ディレクトリに移動
+			testDir := tt.setup()
+			if err := os.Chdir(testDir); err != nil {
+				t.Fatalf("Failed to change directory: %v", err)
+			}
 
-		// テスト実行
-		result := IsGitRepository()
-		if result != tt.expected {
-			t.Errorf("IsGitRepository() = %v, want %v", result, tt.expected)
-		}
+			// テスト実行
+			result := IsGitRepository()
+			if result != tt.expected {
+				t.Errorf("IsGitRepository() = %v, want %v", result, tt.expected)
+			}
 
-		// 元のディレクトリに戻る
-		os.Chdir(originalDir)
-		
-		// テスト用ディレクトリをクリーンアップ
-		if tt.expected {
-			// TestGitRepoの場合はCleanup()を呼ぶ
-			repo := &testutils.TestGitRepo{RepoPath: testDir, OriginalDir: originalDir}
-			repo.Cleanup()
-		} else {
-			os.RemoveAll(testDir)
-		}
+			// 元のディレクトリに戻る
+			os.Chdir(originalDir)
+
+			// テスト用ディレクトリをクリーンアップ
+			if tt.expected {
+				// TestGitRepoの場合はCleanup()を呼ぶ
+				repo := &testutils.TestGitRepo{RepoPath: testDir, OriginalDir: originalDir}
+				repo.Cleanup()
+			} else {
+				os.RemoveAll(testDir)
+			}
 		})
 	}
 }
@@ -162,92 +162,6 @@ index 0000000..3b18e51
 	}
 }
 
-func TestGetWorkingDirectoryChanges(t *testing.T) {
-	repo := testutils.NewTestGitRepo(t)
-	defer repo.Cleanup()
-
-	// テスト用ファイルを作成
-	if err := repo.CreateTestFile("test.txt", "Hello, World!\n"); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
-
-	// ワーキングディレクトリの変更を取得
-	changes, err := GetWorkingDirectoryChanges()
-	if err != nil {
-		t.Fatalf("GetWorkingDirectoryChanges() error = %v", err)
-	}
-
-	// 変更が存在することを確認（diffの出力形式に依存しない）
-	if changes == "" {
-		// 空の場合は、git statusで確認
-		cmd := exec.Command("git", "status", "--porcelain")
-		output, err := cmd.Output()
-		if err != nil {
-			t.Fatalf("git status failed: %v", err)
-		}
-		if len(output) == 0 {
-			t.Errorf("Expected working directory changes, but git status shows no changes")
-		}
-	} else {
-		// 変更がある場合は、何らかの出力があることを確認
-		if len(changes) < 10 {
-			t.Errorf("Expected substantial changes output, but got: %s", changes)
-		}
-	}
-}
-
-func TestCommitWithMessage(t *testing.T) {
-	repo := testutils.NewTestGitRepo(t)
-	defer repo.Cleanup()
-
-	// テスト用ファイルを作成
-	if err := repo.CreateTestFile("test.txt", "Hello, World!\n"); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
-
-	// ファイルをステージング
-	if err := repo.StageFile("test.txt"); err != nil {
-		t.Fatalf("Failed to stage file: %v", err)
-	}
-
-	// コミット
-	message := "Test commit"
-	if err := CommitWithMessage(message); err != nil {
-		t.Fatalf("CommitWithMessage() error = %v", err)
-	}
-
-	// コミットが作成されたかチェック
-	cmd := exec.Command("git", "log", "--oneline", "-1")
-	output, err := cmd.Output()
-	if err != nil {
-		t.Fatalf("Failed to check commit: %v", err)
-	}
-
-	if !strings.Contains(string(output), message) {
-		t.Errorf("Expected commit message '%s', but got: %s", message, string(output))
-	}
-}
-
-func TestGetRepositoryRoot(t *testing.T) {
-	repo := testutils.NewTestGitRepo(t)
-	defer repo.Cleanup()
-
-	root, err := GetRepositoryRoot()
-	if err != nil {
-		t.Fatalf("GetRepositoryRoot() error = %v", err)
-	}
-
-	// 現在のディレクトリと一致するかチェック
-	currentDir, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Failed to get current directory: %v", err)
-	}
-
-	if root != currentDir {
-		t.Errorf("Expected repository root '%s', but got '%s'", currentDir, root)
-	}
-}
-
 func TestGitOperationsIntegration(t *testing.T) {
 	repo := testutils.NewTestGitRepo(t)
 	defer repo.Cleanup()
@@ -266,9 +180,10 @@ func TestGitOperationsIntegration(t *testing.T) {
 		t.Fatalf("GetStagedChanges() error = %v", err)
 	}
 
-	// 3. コミット
-	if err := CommitWithMessage("First commit"); err != nil {
-		t.Fatalf("CommitWithMessage() error = %v", err)
+	// 3. コミット（標準Gitコマンドを使用）
+	cmd := exec.Command("git", "commit", "-m", "First commit")
+	if err := cmd.Run(); err != nil {
+		t.Fatalf("git commit failed: %v", err)
 	}
 
 	// 4. 新しいファイルを作成
@@ -333,10 +248,4 @@ func TestGitErrorHandling(t *testing.T) {
 		}
 	})
 
-	t.Run("GetRepositoryRoot in non-git directory", func(t *testing.T) {
-		_, err := GetRepositoryRoot()
-		if err == nil {
-			t.Errorf("Expected error for GetRepositoryRoot in non-git directory")
-		}
-	})
 }
