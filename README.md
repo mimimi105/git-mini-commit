@@ -169,11 +169,12 @@ npm install -g git-mini-commit
 ### 2. Homebrew (macOS/Linux)
 
 ```bash
-# ソースからビルド
+# ワンライナー（推奨）
 brew install minoru-kinugasa-105/git-mini-commit/git-mini-commit
 
-# またはバイナリ版
-brew install minoru-kinugasa-105/git-mini-commit/git-mini-commit-binary
+# または手動で
+brew tap minoru-kinugasa-105/git-mini-commit
+brew install git-mini-commit
 ```
 
 ### 3. Scoop (Windows)
