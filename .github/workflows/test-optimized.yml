@@ -138,7 +138,7 @@ jobs:
               run: go build -o git-mini-commit .
 
             - name: Run benchmarks
-              run: make benchmark
+              run: timeout 300 make benchmark
 
     # リント・フォーマット（並列実行）
     lint:
