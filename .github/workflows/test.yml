@@ -36,6 +36,7 @@ jobs:
                   go mod tidy
 
             - name: Build binary
+              shell: bash
               run: |
                   if [ "${{ runner.os }}" = "Windows" ]; then
                       go build -o git-mini-commit.exe .
@@ -90,6 +91,7 @@ jobs:
                   go mod tidy
 
             - name: Build binary
+              shell: bash
               run: |
                   if [ "${{ runner.os }}" = "Windows" ]; then
                       go build -o git-mini-commit.exe .
@@ -121,6 +123,7 @@ jobs:
                   go mod tidy
 
             - name: Build binary
+              shell: bash
               run: |
                   if [ "${{ runner.os }}" = "Windows" ]; then
                       go build -o git-mini-commit.exe .
@@ -156,6 +159,7 @@ jobs:
                   go mod tidy
 
             - name: Build binary
+              shell: bash
               run: |
                   if [ "${{ runner.os }}" = "Windows" ]; then
                       go build -o git-mini-commit.exe .
@@ -195,6 +199,7 @@ jobs:
                   go mod tidy
 
             - name: Build binary
+              shell: bash
               run: |
                   if [ "${{ runner.os }}" = "Windows" ]; then
                       go build -o git-mini-commit.exe .
@@ -230,6 +235,7 @@ jobs:
                   go mod tidy
 
             - name: Build binary
+              shell: bash
               run: |
                   if [ "${{ runner.os }}" = "Windows" ]; then
                       go build -o git-mini-commit.exe .
