@@ -3,14 +3,15 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"testing"
 
+	"git-mini-commit/internal/storage"
 	"git-mini-commit/testutils"
 )
 
 func TestCLIIntegration(t *testing.T) {
-	t.Skip("Skipping integration test due to storage isolation issues")
 	// テスト用Gitリポジトリを作成
 	repo := testutils.NewTestGitRepo(t)
 	defer repo.Cleanup()
@@ -39,24 +40,22 @@ func TestCLIIntegration(t *testing.T) {
 		t.Errorf("Expected 'Mini-commits' in output, but got: %s", output)
 	}
 
-	// 4. mini-commitのIDを抽出（listコマンドから取得）
-	listOutput := cli.AssertCommandSuccess(t, "list")
-
-	lines := strings.Split(listOutput, "\n")
-	var miniCommitID string
-	for _, line := range lines {
-		if strings.Contains(line, "ID:") {
-			parts := strings.Split(line, "ID: ")
-			if len(parts) > 1 {
-				miniCommitID = strings.TrimSpace(parts[1])
-				break
-			}
-		}
+	// 4. Get mini-commit ID from storage directly
+	storage, err := storage.NewStorage()
+	if err != nil {
+		t.Fatalf("Failed to initialize storage: %v", err)
 	}
-
-	if miniCommitID == "" {
-		t.Fatalf("Failed to extract mini-commit ID from list output: %s", listOutput)
+	
+	miniCommits, err := storage.LoadMiniCommits()
+	if err != nil {
+		t.Fatalf("Failed to load mini-commits: %v", err)
 	}
+	
+	if len(miniCommits) == 0 {
+		t.Fatalf("No mini-commits found")
+	}
+	
+	miniCommitID := miniCommits[0].ID
 
 	// 5. mini-commitの差分を表示
 	output = cli.AssertCommandSuccess(t, "show", miniCommitID)
@@ -155,7 +154,6 @@ func TestCLIWithMultipleMiniCommits(t *testing.T) {
 }
 
 func TestCLIPopCommand(t *testing.T) {
-	t.Skip("Skipping pop command test due to storage isolation issues")
 	// テスト用Gitリポジトリを作成
 	repo := testutils.NewTestGitRepo(t)
 	defer repo.Cleanup()
@@ -178,38 +176,29 @@ func TestCLIPopCommand(t *testing.T) {
 		t.Errorf("Expected 'Created mini-commit' in output, but got: %s", output)
 	}
 
-	// 3. mini-commitのIDを抽出（listコマンドから取得）
-	listOutput := cli.AssertCommandSuccess(t, "list")
-
-	lines := strings.Split(listOutput, "\n")
-	var miniCommitID string
-	for _, line := range lines {
-		if strings.Contains(line, "ID:") {
-			parts := strings.Split(line, "ID: ")
-			if len(parts) > 1 {
-				miniCommitID = strings.TrimSpace(parts[1])
-				break
-			}
-		}
-	}
-
-	if miniCommitID == "" {
-		t.Fatalf("Failed to extract mini-commit ID from list output: %s", listOutput)
-	}
-
-	// 4. 新しいクリーンなリポジトリを作成
-	cleanRepo := testutils.NewTestGitRepo(t)
-	defer cleanRepo.Cleanup()
-
-	// クリーンなリポジトリに移動
-	originalDir, err := os.Getwd()
+	// 3. Get mini-commit ID from storage directly
+	storage, err := storage.NewStorage()
 	if err != nil {
-		t.Fatalf("Failed to get current directory: %v", err)
+		t.Fatalf("Failed to initialize storage: %v", err)
 	}
-	defer os.Chdir(originalDir)
+	
+	miniCommits, err := storage.LoadMiniCommits()
+	if err != nil {
+		t.Fatalf("Failed to load mini-commits: %v", err)
+	}
+	
+	if len(miniCommits) == 0 {
+		t.Fatalf("No mini-commits found")
+	}
+	
+	miniCommitID := miniCommits[0].ID
 
-	if err := os.Chdir(cleanRepo.RepoPath); err != nil {
-		t.Fatalf("Failed to change to clean repo directory: %v", err)
+	// 4. 現在のリポジトリでステージングエリアをクリア
+	cmd := exec.Command("git", "reset", "--hard", "HEAD")
+	if err := cmd.Run(); err != nil {
+		// 初回コミットがない場合は、単純にファイルを削除
+		cmd = exec.Command("git", "rm", "--cached", "-r", ".")
+		cmd.Run() // エラーは無視
 	}
 
 	// 5. mini-commitをpop
@@ -383,7 +372,6 @@ func TestCLIWithLongMessages(t *testing.T) {
 }
 
 func TestCLIWithConcurrentOperations(t *testing.T) {
-	t.Skip("Skipping concurrent operations test due to storage isolation issues")
 	// テスト用Gitリポジトリを作成
 	repo := testutils.NewTestGitRepo(t)
 	defer repo.Cleanup()

@@ -17,18 +17,18 @@ var dropCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		hash := args[0]
 
-		// Gitリポジトリかチェック
+		// Check if it's a Git repository
 		if !git.IsGitRepository() {
 			return fmt.Errorf("not a git repository")
 		}
 
-		// ストレージを初期化
+		// Initialize storage
 		storage, err := storage.NewStorage()
 		if err != nil {
 			return fmt.Errorf("failed to initialize storage: %v", err)
 		}
 
-		// mini-commitを削除
+		// Delete mini-commit
 		if err := storage.DeleteMiniCommit(hash); err != nil {
 			return fmt.Errorf("failed to delete mini-commit: %v", err)
 		}

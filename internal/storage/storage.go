@@ -18,20 +18,20 @@ const (
 	IndexFile      = "index.json"
 )
 
-// Storage mini-commitのストレージ管理
+// Storage manages mini-commit storage
 type Storage struct {
 	basePath string
 	mutex    sync.RWMutex
 }
 
-// NewStorage 新しいストレージインスタンスを作成
+// NewStorage creates a new storage instance
 func NewStorage() (*Storage, error) {
-	// 現在のディレクトリがGitリポジトリかチェック
+	// Check if current directory is a Git repository
 	if _, err := os.Stat(".git"); os.IsNotExist(err) {
 		return nil, fmt.Errorf("git repository not found")
 	}
 
-	// mini-commitsディレクトリを作成
+	// Create mini-commits directory
 	miniCommitsPath := filepath.Join(".git", "mini-commits")
 	if err := os.MkdirAll(miniCommitsPath, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create mini-commits directory: %v", err)
@@ -42,29 +42,27 @@ func NewStorage() (*Storage, error) {
 	}, nil
 }
 
-// SaveMiniCommit mini-commitを保存
+// SaveMiniCommit saves a mini-commit
 func (s *Storage) SaveMiniCommit(mc *types.MiniCommit) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	// インデックスファイルのパス
-	// indexPath := filepath.Join(s.basePath, IndexFile)
 
-	// 既存のインデックスを読み込み
+	// Load existing index
 	index, err := s.loadIndex()
 	if err != nil {
 		return fmt.Errorf("failed to load index: %v", err)
 	}
 
-	// 新しいmini-commitを追加
+	// Add new mini-commit
 	index = append(index, *mc)
 
-	// インデックスを保存
+	// Save index
 	if err := s.saveIndex(index); err != nil {
 		return fmt.Errorf("failed to save index: %v", err)
 	}
 
-	// patchファイルを保存
+	// Save patch file
 	patchPath := filepath.Join(s.basePath, mc.ID+".patch")
 	if err := os.WriteFile(patchPath, []byte(mc.Patch), 0644); err != nil {
 		return fmt.Errorf("failed to save patch file: %v", err)
@@ -73,14 +71,14 @@ func (s *Storage) SaveMiniCommit(mc *types.MiniCommit) error {
 	return nil
 }
 
-// LoadMiniCommits すべてのmini-commitを読み込み
+// LoadMiniCommits loads all mini-commits
 func (s *Storage) LoadMiniCommits() (types.MiniCommitList, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 	return s.loadIndex()
 }
 
-// GetMiniCommit 指定されたIDのmini-commitを取得
+// GetMiniCommit gets a mini-commit by ID
 func (s *Storage) GetMiniCommit(id string) (*types.MiniCommit, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
@@ -99,7 +97,7 @@ func (s *Storage) GetMiniCommit(id string) (*types.MiniCommit, error) {
 	return nil, fmt.Errorf("mini-commit '%s' not found", id)
 }
 
-// DeleteMiniCommit 指定されたIDのmini-commitを削除
+// DeleteMiniCommit deletes a mini-commit by ID
 func (s *Storage) DeleteMiniCommit(id string) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
@@ -109,7 +107,7 @@ func (s *Storage) DeleteMiniCommit(id string) error {
 		return err
 	}
 
-	// インデックスから削除
+	// Remove from index
 	var newIndex types.MiniCommitList
 	found := false
 	for _, mc := range index {
@@ -124,12 +122,12 @@ func (s *Storage) DeleteMiniCommit(id string) error {
 		return fmt.Errorf("mini-commit '%s' not found", id)
 	}
 
-	// インデックスを保存
+	// Save index
 	if err := s.saveIndex(newIndex); err != nil {
 		return fmt.Errorf("failed to save index: %v", err)
 	}
 
-	// patchファイルを削除
+	// Delete patch file
 	patchPath := filepath.Join(s.basePath, id+".patch")
 	if err := os.Remove(patchPath); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("failed to delete patch file: %v", err)
@@ -138,14 +136,14 @@ func (s *Storage) DeleteMiniCommit(id string) error {
 	return nil
 }
 
-// ClearAllMiniCommits すべてのmini-commitを削除
+// ClearAllMiniCommits deletes all mini-commits
 func (s *Storage) ClearAllMiniCommits() error {
 	index, err := s.loadIndex()
 	if err != nil {
 		return err
 	}
 
-	// すべてのpatchファイルを削除
+	// Delete all patch files
 	for _, mc := range index {
 		patchPath := filepath.Join(s.basePath, mc.ID+".patch")
 		if err := os.Remove(patchPath); err != nil && !os.IsNotExist(err) {
@@ -153,7 +151,7 @@ func (s *Storage) ClearAllMiniCommits() error {
 		}
 	}
 
-	// インデックスを空にして保存
+	// Save empty index
 	if err := s.saveIndex(types.MiniCommitList{}); err != nil {
 		return fmt.Errorf("failed to save index: %v", err)
 	}
@@ -161,11 +159,11 @@ func (s *Storage) ClearAllMiniCommits() error {
 	return nil
 }
 
-// loadIndex インデックスファイルを読み込み
+// loadIndex loads the index file
 func (s *Storage) loadIndex() (types.MiniCommitList, error) {
 	indexPath := filepath.Join(s.basePath, IndexFile)
 
-	// ファイルが存在しない場合は空のリストを返す
+	// Return empty list if file doesn't exist
 	if _, err := os.Stat(indexPath); os.IsNotExist(err) {
 		return types.MiniCommitList{}, nil
 	}
@@ -183,7 +181,7 @@ func (s *Storage) loadIndex() (types.MiniCommitList, error) {
 	return index, nil
 }
 
-// saveIndex インデックスファイルを保存
+// saveIndex saves the index file
 func (s *Storage) saveIndex(index types.MiniCommitList) error {
 	indexPath := filepath.Join(s.basePath, IndexFile)
 
@@ -199,7 +197,7 @@ func (s *Storage) saveIndex(index types.MiniCommitList) error {
 	return nil
 }
 
-// GenerateID patch内容とタイムスタンプからIDを生成
+// GenerateID generates ID from patch content and timestamp
 func (s *Storage) GenerateID(patch string, timestamp time.Time) string {
 	h := sha1.New()
 	_, _ = io.WriteString(h, patch)

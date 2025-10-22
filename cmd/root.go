@@ -33,12 +33,12 @@ Usage:
 			return fmt.Errorf("message is required (-m option)")
 		}
 
-		// Gitリポジトリかチェック
+		// Check if it's a Git repository
 		if !git.IsGitRepository() {
 			return fmt.Errorf("not a git repository")
 		}
 
-		// ステージングされた変更があるかチェック
+		// Check if there are staged changes
 		hasChanges, err := git.HasStagedChanges()
 		if err != nil {
 			return fmt.Errorf("failed to check staging status: %v", err)
@@ -47,19 +47,19 @@ Usage:
 			return fmt.Errorf("no staged changes")
 		}
 
-		// ステージングされた変更を取得
+		// Get staged changes
 		patch, err := git.GetStagedChanges()
 		if err != nil {
 			return fmt.Errorf("failed to get staged changes: %v", err)
 		}
 
-		// ストレージを初期化
+		// Initialize storage
 		storage, err := storage.NewStorage()
 		if err != nil {
 			return fmt.Errorf("failed to initialize storage: %v", err)
 		}
 
-		// mini-commitを作成
+		// Create mini-commit
 		now := time.Now()
 		mc := &types.MiniCommit{
 			ID:        storage.GenerateID(patch, now),
@@ -68,7 +68,7 @@ Usage:
 			Patch:     patch,
 		}
 
-		// 保存
+		// Save
 		if err := storage.SaveMiniCommit(mc); err != nil {
 			return fmt.Errorf("failed to save mini-commit: %v", err)
 		}
@@ -85,7 +85,7 @@ func init() {
 	rootCmd.Flags().StringP("message", "m", "", "mini-commit message")
 }
 
-// Execute はコマンドを実行します
+// Execute runs the command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

@@ -17,24 +17,24 @@ var popCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		hash := args[0]
 
-		// Gitリポジトリかチェック
+		// Check if it's a Git repository
 		if !git.IsGitRepository() {
 			return fmt.Errorf("not a git repository")
 		}
 
-		// ストレージを初期化
+		// Initialize storage
 		storage, err := storage.NewStorage()
 		if err != nil {
 			return fmt.Errorf("failed to initialize storage: %v", err)
 		}
 
-		// mini-commitを取得
+		// Get mini-commit
 		mc, err := storage.GetMiniCommit(hash)
 		if err != nil {
 			return fmt.Errorf("failed to get mini-commit: %v", err)
 		}
 
-		// patchをステージングエリアに適用
+		// Apply patch to staging area
 		if err := git.ApplyPatch(mc.Patch); err != nil {
 			return fmt.Errorf("failed to apply patch: %v", err)
 		}
