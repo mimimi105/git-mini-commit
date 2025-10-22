@@ -4,9 +4,9 @@ Priority: optional
 Maintainer: Minoru Kinugasa minoru105ts@gmail.com
 Build-Depends: debhelper (>= 11), dh-golang, golang-go (>= 1.21)
 Standards-Version: 4.1.3
-Homepage: https://github.com/minoru-kinugasa-105/git-mini-commit
-Vcs-Git: https://github.com/minoru-kinugasa-105/git-mini-commit.git
-Vcs-Browser: https://github.com/minoru-kinugasa-105/git-mini-commit
+Homepage: https://github.com/mimimi105/git-mini-commit
+Vcs-Git: https://github.com/mimimi105/git-mini-commit.git
+Vcs-Browser: https://github.com/mimimi105/git-mini-commit
 
 Package: git-mini-commit
 Architecture: any

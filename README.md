@@ -170,17 +170,17 @@ npm install -g git-mini-commit
 
 ```bash
 # ワンライナー（推奨）
-brew install minoru-kinugasa-105/git-mini-commit/git-mini-commit
+brew install mimimi105/git-mini-commit/git-mini-commit
 
 # または手動で
-brew tap minoru-kinugasa-105/git-mini-commit
+brew tap mimimi105/git-mini-commit
 brew install git-mini-commit
 ```
 
 ### 3. Scoop (Windows)
 
 ```bash
-scoop bucket add git-mini-commit https://github.com/minoru-kinugasa-105/git-mini-commit
+scoop bucket add git-mini-commit https://github.com/mimimi105/git-mini-commit
 scoop install git-mini-commit
 ```
 
@@ -188,39 +188,39 @@ scoop install git-mini-commit
 
 ```bash
 # Linux (AMD64)
-curl -L https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-linux-amd64 -o git-mini-commit
+curl -L https://github.com/mimimi105/git-mini-commit/releases/latest/download/git-mini-commit-linux-amd64 -o git-mini-commit
 chmod +x git-mini-commit
 sudo mv git-mini-commit /usr/local/bin/
 
 # macOS (Intel)
-curl -L https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-darwin-amd64 -o git-mini-commit
+curl -L https://github.com/mimimi105/git-mini-commit/releases/latest/download/git-mini-commit-darwin-amd64 -o git-mini-commit
 chmod +x git-mini-commit
 sudo mv git-mini-commit /usr/local/bin/
 
 # macOS (Apple Silicon)
-curl -L https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-darwin-arm64 -o git-mini-commit
+curl -L https://github.com/mimimi105/git-mini-commit/releases/latest/download/git-mini-commit-darwin-arm64 -o git-mini-commit
 chmod +x git-mini-commit
 sudo mv git-mini-commit /usr/local/bin/
 
 # Windows (PowerShell)
-Invoke-WebRequest -Uri "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit-windows-amd64.exe" -OutFile "git-mini-commit.exe"
+Invoke-WebRequest -Uri "https://github.com/mimimi105/git-mini-commit/releases/latest/download/git-mini-commit-windows-amd64.exe" -OutFile "git-mini-commit.exe"
 ```
 
 ### 5. Debian/Ubuntu パッケージ
 
 ```bash
 # 自動インストールスクリプト
-curl -fsSL https://raw.githubusercontent.com/minoru-kinugasa-105/git-mini-commit/main/scripts/install-debian.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mimimi105/git-mini-commit/main/scripts/install-debian.sh | bash
 
 # または手動で .deb パッケージをインストール
-wget https://github.com/minoru-kinugasa-105/git-mini-commit/releases/latest/download/git-mini-commit_0.1.0-1_amd64.deb
+wget https://github.com/mimimi105/git-mini-commit/releases/latest/download/git-mini-commit_0.1.0-1_amd64.deb
 sudo dpkg -i git-mini-commit_0.1.0-1_amd64.deb
 ```
 
 ### 6. ソースからビルド
 
 ```bash
-git clone https://github.com/minoru-kinugasa-105/git-mini-commit.git
+git clone https://github.com/mimimi105/git-mini-commit.git
 cd git-mini-commit
 go build -o git-mini-commit .
 sudo mv git-mini-commit /usr/local/bin/
@@ -245,4 +245,4 @@ git mini-commit --version
 
 ## Author / Contact
 
-- GitHub: https://github.com/minoru-kinugasa-105
+- GitHub: https://github.com/mimimi105

@@ -6,7 +6,7 @@ set -e
 echo "🔄 Updating all package manager recipes..."
 
 # 最新リリース情報を取得
-LATEST_RELEASE=$(curl -s https://api.github.com/repos/minoru-kinugasa-105/git-mini-commit/releases/latest)
+LATEST_RELEASE=$(curl -s https://api.github.com/repos/mimimi105/git-mini-commit/releases/latest)
 VERSION=$(echo "$LATEST_RELEASE" | jq -r '.tag_name' | sed 's/v//')
 
 echo "📦 Latest version: $VERSION"

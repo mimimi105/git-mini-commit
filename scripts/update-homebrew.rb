@@ -6,7 +6,7 @@ require 'digest'
 
 # GitHub API から最新リリース情報を取得
 def get_latest_release
-  uri = URI('https://api.github.com/repos/minoru-kinugasa-105/git-mini-commit/releases/latest')
+  uri = URI('https://api.github.com/repos/mimimi105/git-mini-commit/releases/latest')
   response = Net::HTTP.get_response(uri)
   JSON.parse(response.body)
 end
@@ -35,7 +35,7 @@ def update_formula(release)
   formula_content = <<~RUBY
     class GitMiniCommitBinary < Formula
       desc "Git CLI extension for mini-commit workflow: local, small commits between staging and regular commit"
-      homepage "https://github.com/minoru-kinugasa-105/git-mini-commit"
+      homepage "https://github.com/mimimi105/git-mini-commit"
       url "#{darwin_amd64_url}"
       sha256 "#{darwin_amd64_sha256}"
       license "MIT"

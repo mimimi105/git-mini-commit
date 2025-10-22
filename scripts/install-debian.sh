@@ -10,9 +10,9 @@ echo "Installing git-mini-commit for Debian/Ubuntu (${ARCH})..."
 
 # 最新リリースのURLを取得
 if [ "$VERSION" = "latest" ]; then
-    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/minoru-kinugasa-105/git-mini-commit/releases/latest | grep "browser_download_url.*linux-${ARCH}" | cut -d '"' -f 4)
+    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/mimimi105/git-mini-commit/releases/latest | grep "browser_download_url.*linux-${ARCH}" | cut -d '"' -f 4)
 else
-    DOWNLOAD_URL="https://github.com/minoru-kinugasa-105/git-mini-commit/releases/download/v${VERSION}/git-mini-commit-linux-${ARCH}"
+    DOWNLOAD_URL="https://github.com/mimimi105/git-mini-commit/releases/download/v${VERSION}/git-mini-commit-linux-${ARCH}"
 fi
 
 if [ -z "$DOWNLOAD_URL" ]; then

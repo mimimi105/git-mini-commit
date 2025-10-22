@@ -6,7 +6,7 @@ require 'digest'
 
 # GitHub API から最新リリース情報を取得
 def get_latest_release
-  uri = URI('https://api.github.com/repos/minoru-kinugasa-105/git-mini-commit/releases/latest')
+  uri = URI('https://api.github.com/repos/mimimi105/git-mini-commit/releases/latest')
   response = Net::HTTP.get_response(uri)
   JSON.parse(response.body)
 end
@@ -35,7 +35,7 @@ def update_scoop_recipe(release)
   recipe_content = {
     "version" => version,
     "description" => "Git CLI extension for mini-commit workflow: local, small commits between staging and regular commit",
-    "homepage" => "https://github.com/minoru-kinugasa-105/git-mini-commit",
+    "homepage" => "https://github.com/mimimi105/git-mini-commit",
     "license" => "MIT",
     "architecture" => {
       "64bit" => {
@@ -53,10 +53,10 @@ def update_scoop_recipe(release)
     "autoupdate" => {
       "architecture" => {
         "64bit" => {
-          "url" => "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/download/v$version/git-mini-commit-windows-amd64.exe"
+          "url" => "https://github.com/mimimi105/git-mini-commit/releases/download/v$version/git-mini-commit-windows-amd64.exe"
         },
         "arm64" => {
-          "url" => "https://github.com/minoru-kinugasa-105/git-mini-commit/releases/download/v$version/git-mini-commit-windows-arm64.exe"
+          "url" => "https://github.com/mimimi105/git-mini-commit/releases/download/v$version/git-mini-commit-windows-arm64.exe"
         }
       }
     }

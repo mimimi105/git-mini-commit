@@ -44,23 +44,23 @@ gh release create "v$VERSION" \
 
 ### Homebrew (macOS/Linux)
 \`\`\`bash
-brew install minoru-kinugasa-105/git-mini-commit/git-mini-commit
+brew install mimimi105/git-mini-commit/git-mini-commit
 \`\`\`
 
 ### Direct Download
 \`\`\`bash
 # macOS (Apple Silicon)
-curl -L https://github.com/minoru-kinugasa-105/mini-commit/releases/latest/download/git-mini-commit-darwin-arm64 -o git-mini-commit
+curl -L https://github.com/mimimi105/mini-commit/releases/latest/download/git-mini-commit-darwin-arm64 -o git-mini-commit
 chmod +x git-mini-commit
 sudo mv git-mini-commit /usr/local/bin/
 \`\`\`
 
 ### Scoop (Windows)
 \`\`\`bash
-scoop bucket add git-mini-commit https://github.com/minoru-kinugasa-105/scoop-git-mini-commit
+scoop bucket add git-mini-commit https://github.com/mimimi105/scoop-git-mini-commit
 scoop install git-mini-commit
 \`\`\`" \
   builds/*
 
 echo "✅ Release created successfully!"
-echo "Release URL: https://github.com/minoru-kinugasa-105/mini-commit/releases/tag/v$VERSION"
+echo "Release URL: https://github.com/mimimi105/mini-commit/releases/tag/v$VERSION"
