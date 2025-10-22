@@ -16,6 +16,7 @@ func TestCLIIntegration(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. ファイルを作成してステージング
 	if err := repo.CreateTestFile("test.txt", "Hello, World!\n"); err != nil {
@@ -85,6 +86,7 @@ func TestCLIIntegrationErrorHandling(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. メッセージなしでmini-commitを作成（エラー）
 	cli.AssertCommandFailure(t)
@@ -109,6 +111,7 @@ func TestCLIWithMultipleMiniCommits(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. 最初のファイルを作成してステージング
 	if err := repo.CreateTestFile("file1.txt", "Content 1\n"); err != nil {
@@ -160,6 +163,7 @@ func TestCLIPopCommand(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. ファイルを作成してステージング
 	if err := repo.CreateTestFile("test.txt", "Hello, World!\n"); err != nil {
@@ -235,6 +239,7 @@ func TestCLIWithLargeFiles(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. 大きなファイルを作成
 	largeContent := strings.Repeat("This is a test line.\n", 1000)
@@ -265,6 +270,7 @@ func TestCLIWithBinaryFiles(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. バイナリファイルを作成
 	binaryContent := []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
@@ -295,6 +301,7 @@ func TestCLIWithSpecialCharacters(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. 特殊文字を含むファイルを作成
 	specialContent := "Hello, 世界! 🌍\nSpecial chars: !@#$%^&*()\n"
@@ -325,6 +332,7 @@ func TestCLIWithEmptyFiles(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. 空のファイルを作成
 	if err := repo.CreateTestFile("empty.txt", ""); err != nil {
@@ -354,6 +362,7 @@ func TestCLIWithLongMessages(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 1. ファイルを作成してステージング
 	if err := repo.CreateTestFile("test.txt", "Hello, World!\n"); err != nil {
@@ -384,6 +393,7 @@ func TestCLIWithConcurrentOperations(t *testing.T) {
 
 	// テスト用CLIを作成
 	cli := testutils.NewTestCLI(t)
+	cli.SetRepo(repo)
 
 	// 複数のgoroutineで同時にmini-commitを作成
 	done := make(chan bool, 5)

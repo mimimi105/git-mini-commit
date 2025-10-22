@@ -166,17 +166,25 @@ func (s *TestStorage) AssertMiniCommitCount(t *testing.T, expected int) {
 }
 
 // TestCLI テスト用CLI実行
-type TestCLI struct{}
+type TestCLI struct{
+	repo *TestGitRepo
+}
 
 // NewTestCLI テスト用CLIを作成
 func NewTestCLI(t *testing.T) *TestCLI {
 	return &TestCLI{}
 }
 
+// SetRepo テスト用リポジトリを設定
+func (c *TestCLI) SetRepo(repo *TestGitRepo) {
+	c.repo = repo
+}
+
 // RunCommand CLIコマンドを実行
 func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	// 元のプロジェクトディレクトリのバイナリを使用
 	// 環境変数から元のディレクトリを取得するか、固定パスを使用
+	// 環境変数から元のプロジェクトディレクトリを取得
 	projectDir := os.Getenv("GIT_MINI_COMMIT_PROJECT_DIR")
 	if projectDir == "" {
 		// 環境変数が設定されていない場合は、現在のディレクトリから遡って探す
@@ -207,9 +215,15 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	
 	binaryPath := filepath.Join(projectDir, "git-mini-commit")
 	
-	// バイナリが存在しない場合は、現在のディレクトリのバイナリを使用
-	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
-		binaryPath = "./git-mini-commit"
+	// デバッグ情報を追加
+	fmt.Printf("DEBUG: Project directory: %s\n", projectDir)
+	fmt.Printf("DEBUG: Binary path: %s\n", binaryPath)
+	
+	// デバッグ情報を追加
+	fmt.Printf("DEBUG: Trying to execute binary at: %s\n", binaryPath)
+	if _, err := os.Stat(binaryPath); err != nil {
+		fmt.Printf("DEBUG: Binary not found at %s: %v\n", binaryPath, err)
+		return "", "", fmt.Errorf("git-mini-commit binary not found at %s: %v", binaryPath, err)
 	}
 	
 	cmd := exec.Command(binaryPath, args...)
@@ -217,9 +231,18 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	
-	err := cmd.Run()
+	// テスト用のストレージディレクトリを設定
+	if c.repo != nil {
+		cmd.Env = append(os.Environ(), "GIT_MINI_COMMIT_STORAGE_DIR="+c.repo.RepoPath)
+		// テスト用ディレクトリで実行
+		cmd.Dir = c.repo.RepoPath
+		fmt.Printf("DEBUG: Setting storage dir to: %s\n", c.repo.RepoPath)
+		fmt.Printf("DEBUG: Setting working dir to: %s\n", c.repo.RepoPath)
+	}
 	
-	return stdout.String(), stderr.String(), err
+	runErr := cmd.Run()
+	
+	return stdout.String(), stderr.String(), runErr
 }
 
 // AssertCommandSuccess コマンドが成功することを確認
