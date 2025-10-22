@@ -36,7 +36,12 @@ jobs:
                   go mod tidy
 
             - name: Build binary
-              run: go build -o git-mini-commit .
+              run: |
+                  if [ "${{ runner.os }}" = "Windows" ]; then
+                      go build -o git-mini-commit.exe .
+                  else
+                      go build -o git-mini-commit .
+                  fi
 
             - name: Run tests
               run: make test
@@ -85,7 +90,12 @@ jobs:
                   go mod tidy
 
             - name: Build binary
-              run: go build -o git-mini-commit .
+              run: |
+                  if [ "${{ runner.os }}" = "Windows" ]; then
+                      go build -o git-mini-commit.exe .
+                  else
+                      go build -o git-mini-commit .
+                  fi
 
             - name: Run integration tests
               run: make integration-test
@@ -111,7 +121,12 @@ jobs:
                   go mod tidy
 
             - name: Build binary
-              run: go build -o git-mini-commit .
+              run: |
+                  if [ "${{ runner.os }}" = "Windows" ]; then
+                      go build -o git-mini-commit.exe .
+                  else
+                      go build -o git-mini-commit .
+                  fi
 
             - name: Run security tests
               run: |
@@ -141,7 +156,12 @@ jobs:
                   go mod tidy
 
             - name: Build binary
-              run: go build -o git-mini-commit .
+              run: |
+                  if [ "${{ runner.os }}" = "Windows" ]; then
+                      go build -o git-mini-commit.exe .
+                  else
+                      go build -o git-mini-commit .
+                  fi
 
             - name: Run performance tests
               run: make perf-test
@@ -175,7 +195,12 @@ jobs:
                   go mod tidy
 
             - name: Build binary
-              run: go build -o git-mini-commit .
+              run: |
+                  if [ "${{ runner.os }}" = "Windows" ]; then
+                      go build -o git-mini-commit.exe .
+                  else
+                      go build -o git-mini-commit .
+                  fi
 
             - name: Build for all platforms
               run: make build-all
@@ -205,7 +230,12 @@ jobs:
                   go mod tidy
 
             - name: Build binary
-              run: go build -o git-mini-commit .
+              run: |
+                  if [ "${{ runner.os }}" = "Windows" ]; then
+                      go build -o git-mini-commit.exe .
+                  else
+                      go build -o git-mini-commit .
+                  fi
 
             - name: Build for all platforms
               run: make build-all
