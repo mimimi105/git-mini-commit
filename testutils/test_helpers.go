@@ -231,6 +231,10 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	}
 	
 	if _, err := os.Stat(binaryPath); err != nil {
+		// Windows環境でのデバッグ情報を追加
+		if runtime.GOOS == "windows" {
+			return "", "", fmt.Errorf("git-mini-commit binary not found at %s: %v (GOOS: %s)", binaryPath, err, runtime.GOOS)
+		}
 		return "", "", fmt.Errorf("git-mini-commit binary not found at %s: %v", binaryPath, err)
 	}
 	
@@ -247,7 +251,12 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 		if runtime.GOOS == "windows" {
 			storageDir = filepath.ToSlash(storageDir)
 		}
-		cmd.Env = append(os.Environ(), "GIT_MINI_COMMIT_STORAGE_DIR="+storageDir)
+		
+		// 環境変数を設定
+		env := os.Environ()
+		env = append(env, "GIT_MINI_COMMIT_STORAGE_DIR="+storageDir)
+		cmd.Env = env
+		
 		// テスト用ディレクトリで実行
 		cmd.Dir = c.repo.RepoPath
 	}
