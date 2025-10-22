@@ -285,8 +285,11 @@ func BenchmarkStorageScalability(b *testing.B) {
 	// テスト用patchを作成
 	patch := "diff --git a/test.txt b/test.txt\nnew file mode 100644\nindex 0000000..3b18e51\n--- /dev/null\n+++ b/test.txt\n@@ -0,0 +1 @@\n+Hello, World!\n"
 
-	// 異なる数のmini-commitでテスト
-	sizes := []int{10, 100, 1000, 10000}
+	// 異なる数のmini-commitでテスト（CIでは重いテストをスキップ）
+	sizes := []int{10, 100, 1000}
+	if testing.Short() {
+		sizes = []int{10, 100} // 短縮モードでは軽いテストのみ
+	}
 	
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size%d", size), func(b *testing.B) {
