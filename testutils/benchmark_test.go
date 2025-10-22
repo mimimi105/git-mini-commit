@@ -290,7 +290,7 @@ func BenchmarkStorageScalability(b *testing.B) {
 	if testing.Short() {
 		sizes = []int{10, 100} // 短縮モードでは軽いテストのみ
 	}
-	
+
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size%d", size), func(b *testing.B) {
 			// 事前にmini-commitを作成

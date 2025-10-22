@@ -39,9 +39,13 @@ jobs:
               run: go build -o git-mini-commit .
 
             - name: Run tests
+              env:
+                  GIT_MINI_COMMIT_PROJECT_DIR: ${{ github.workspace }}
               run: make test
 
             - name: Run tests with coverage
+              env:
+                  GIT_MINI_COMMIT_PROJECT_DIR: ${{ github.workspace }}
               run: make test-coverage
 
             - name: Upload coverage
@@ -86,6 +90,8 @@ jobs:
                   fi
 
             - name: Run tests
+              env:
+                  GIT_MINI_COMMIT_PROJECT_DIR: ${{ github.workspace }}
               run: make test
 
     # ベンチマークテスト（並列実行）
@@ -120,6 +126,8 @@ jobs:
               run: go build -o git-mini-commit .
 
             - name: Run benchmarks
+              env:
+                  GIT_MINI_COMMIT_PROJECT_DIR: ${{ github.workspace }}
               run: |
                   go test -bench=. -benchmem -timeout=2m -short ./...
 
@@ -228,9 +236,13 @@ jobs:
               run: go build -o git-mini-commit .
 
             - name: Run integration tests
+              env:
+                  GIT_MINI_COMMIT_PROJECT_DIR: ${{ github.workspace }}
               run: make integration-test
 
             - name: Run stress tests
+              env:
+                  GIT_MINI_COMMIT_PROJECT_DIR: ${{ github.workspace }}
               run: make stress-test
 
     # パフォーマンステスト（並列実行）
@@ -265,6 +277,8 @@ jobs:
               run: go build -o git-mini-commit .
 
             - name: Run performance tests
+              env:
+                  GIT_MINI_COMMIT_PROJECT_DIR: ${{ github.workspace }}
               run: |
                   go test -v -bench=. -benchmem -timeout=5m ./...
 

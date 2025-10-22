@@ -27,7 +27,7 @@ func GetStagedChanges() (string, error) {
 func HasStagedChanges() (bool, error) {
 	cmd := exec.Command("git", "diff", "--cached", "--quiet")
 	err := cmd.Run()
-	
+
 	// exit code 0: 変更なし, 1: 変更あり
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
@@ -35,7 +35,7 @@ func HasStagedChanges() (bool, error) {
 		}
 		return false, fmt.Errorf("failed to check staging status: %v", err)
 	}
-	
+
 	return false, nil
 }
 
@@ -43,7 +43,7 @@ func HasStagedChanges() (bool, error) {
 func ApplyPatch(patch string) error {
 	cmd := exec.Command("git", "apply", "--cached")
 	cmd.Stdin = strings.NewReader(patch)
-	
+
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 

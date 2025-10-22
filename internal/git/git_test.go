@@ -39,35 +39,35 @@ func TestIsGitRepository(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-		// 元のディレクトリを保存
-		originalDir, err := os.Getwd()
-		if err != nil {
-			t.Fatalf("Failed to get current directory: %v", err)
-		}
+			// 元のディレクトリを保存
+			originalDir, err := os.Getwd()
+			if err != nil {
+				t.Fatalf("Failed to get current directory: %v", err)
+			}
 
-		// テスト用ディレクトリに移動
-		testDir := tt.setup()
-		if err := os.Chdir(testDir); err != nil {
-			t.Fatalf("Failed to change directory: %v", err)
-		}
+			// テスト用ディレクトリに移動
+			testDir := tt.setup()
+			if err := os.Chdir(testDir); err != nil {
+				t.Fatalf("Failed to change directory: %v", err)
+			}
 
-		// テスト実行
-		result := IsGitRepository()
-		if result != tt.expected {
-			t.Errorf("IsGitRepository() = %v, want %v", result, tt.expected)
-		}
+			// テスト実行
+			result := IsGitRepository()
+			if result != tt.expected {
+				t.Errorf("IsGitRepository() = %v, want %v", result, tt.expected)
+			}
 
-		// 元のディレクトリに戻る
-		os.Chdir(originalDir)
-		
-		// テスト用ディレクトリをクリーンアップ
-		if tt.expected {
-			// TestGitRepoの場合はCleanup()を呼ぶ
-			repo := &testutils.TestGitRepo{RepoPath: testDir, OriginalDir: originalDir}
-			repo.Cleanup()
-		} else {
-			os.RemoveAll(testDir)
-		}
+			// 元のディレクトリに戻る
+			os.Chdir(originalDir)
+
+			// テスト用ディレクトリをクリーンアップ
+			if tt.expected {
+				// TestGitRepoの場合はCleanup()を呼ぶ
+				repo := &testutils.TestGitRepo{RepoPath: testDir, OriginalDir: originalDir}
+				repo.Cleanup()
+			} else {
+				os.RemoveAll(testDir)
+			}
 		})
 	}
 }
@@ -234,7 +234,7 @@ func TestGetRepositoryRoot(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("Skipping repository root test on Windows (path name differences)")
 	}
-	
+
 	repo := testutils.NewTestGitRepo(t)
 	defer repo.Cleanup()
 

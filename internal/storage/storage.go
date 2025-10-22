@@ -49,7 +49,7 @@ func (s *Storage) SaveMiniCommit(mc *types.MiniCommit) error {
 
 	// インデックスファイルのパス
 	// indexPath := filepath.Join(s.basePath, IndexFile)
-	
+
 	// 既存のインデックスを読み込み
 	index, err := s.loadIndex()
 	if err != nil {
@@ -84,7 +84,7 @@ func (s *Storage) LoadMiniCommits() (types.MiniCommitList, error) {
 func (s *Storage) GetMiniCommit(id string) (*types.MiniCommit, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
-	
+
 	index, err := s.loadIndex()
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (s *Storage) GetMiniCommit(id string) (*types.MiniCommit, error) {
 func (s *Storage) DeleteMiniCommit(id string) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	
+
 	index, err := s.loadIndex()
 	if err != nil {
 		return err
@@ -164,7 +164,7 @@ func (s *Storage) ClearAllMiniCommits() error {
 // loadIndex インデックスファイルを読み込み
 func (s *Storage) loadIndex() (types.MiniCommitList, error) {
 	indexPath := filepath.Join(s.basePath, IndexFile)
-	
+
 	// ファイルが存在しない場合は空のリストを返す
 	if _, err := os.Stat(indexPath); os.IsNotExist(err) {
 		return types.MiniCommitList{}, nil
@@ -186,7 +186,7 @@ func (s *Storage) loadIndex() (types.MiniCommitList, error) {
 // saveIndex インデックスファイルを保存
 func (s *Storage) saveIndex(index types.MiniCommitList) error {
 	indexPath := filepath.Join(s.basePath, IndexFile)
-	
+
 	data, err := json.MarshalIndent(index, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to serialize index: %v", err)
@@ -202,7 +202,7 @@ func (s *Storage) saveIndex(index types.MiniCommitList) error {
 // GenerateID patch内容とタイムスタンプからIDを生成
 func (s *Storage) GenerateID(patch string, timestamp time.Time) string {
 	h := sha1.New()
-	io.WriteString(h, patch)
-	io.WriteString(h, timestamp.Format(time.RFC3339Nano))
+	_, _ = io.WriteString(h, patch)
+	_, _ = io.WriteString(h, timestamp.Format(time.RFC3339Nano))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }

@@ -41,7 +41,7 @@ func TestCLIIntegration(t *testing.T) {
 
 	// 4. mini-commitのIDを抽出（listコマンドから取得）
 	listOutput := cli.AssertCommandSuccess(t, "list")
-	
+
 	lines := strings.Split(listOutput, "\n")
 	var miniCommitID string
 	for _, line := range lines {
@@ -180,7 +180,7 @@ func TestCLIPopCommand(t *testing.T) {
 
 	// 3. mini-commitのIDを抽出（listコマンドから取得）
 	listOutput := cli.AssertCommandSuccess(t, "list")
-	
+
 	lines := strings.Split(listOutput, "\n")
 	var miniCommitID string
 	for _, line := range lines {
@@ -200,14 +200,14 @@ func TestCLIPopCommand(t *testing.T) {
 	// 4. 新しいクリーンなリポジトリを作成
 	cleanRepo := testutils.NewTestGitRepo(t)
 	defer cleanRepo.Cleanup()
-	
+
 	// クリーンなリポジトリに移動
 	originalDir, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("Failed to get current directory: %v", err)
 	}
 	defer os.Chdir(originalDir)
-	
+
 	if err := os.Chdir(cleanRepo.RepoPath); err != nil {
 		t.Fatalf("Failed to change to clean repo directory: %v", err)
 	}
@@ -394,7 +394,7 @@ func TestCLIWithConcurrentOperations(t *testing.T) {
 
 	// 複数のgoroutineで同時にmini-commitを作成
 	done := make(chan bool, 5)
-	
+
 	for i := 0; i < 5; i++ {
 		go func(i int) {
 			// ファイルを作成してステージング
@@ -405,11 +405,11 @@ func TestCLIWithConcurrentOperations(t *testing.T) {
 				done <- false
 				return
 			}
-		if err := repo.StageFile(filename); err != nil {
-			// 並行処理での競合は許容する
-			done <- false
-			return
-		}
+			if err := repo.StageFile(filename); err != nil {
+				// 並行処理での競合は許容する
+				done <- false
+				return
+			}
 
 			// mini-commitを作成
 			message := fmt.Sprintf("Concurrent commit %d", i)

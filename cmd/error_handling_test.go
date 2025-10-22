@@ -39,12 +39,12 @@ func TestCLIErrorHandling(t *testing.T) {
 		// 新しいテスト用Gitリポジトリを作成（ステージングエリアが空の状態）
 		cleanRepo := testutils.NewTestGitRepo(t)
 		defer cleanRepo.Cleanup()
-		
+
 		// ファイルを作成するがステージングしない
 		if err := cleanRepo.CreateTestFile("test.txt", "Hello, World!\n"); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
-		
+
 		// ステージングされた変更なしでmini-commitを作成（エラー）
 		output := cli.AssertCommandFailure(t, "-m", "Test commit")
 		if !strings.Contains(output, "no staged changes") {
@@ -160,7 +160,7 @@ func TestCLIWithPermissionErrors(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("Skipping permission error test on Windows")
 	}
-	
+
 	// テスト用Gitリポジトリを作成
 	repo := testutils.NewTestGitRepo(t)
 	defer repo.Cleanup()
@@ -263,7 +263,7 @@ func TestCLIWithConcurrentAccess(t *testing.T) {
 
 	// 2. 複数のgoroutineで同時にmini-commitを作成
 	done := make(chan bool, 3)
-	
+
 	for i := 0; i < 3; i++ {
 		go func(i int) {
 			message := fmt.Sprintf("Concurrent commit %d", i)
