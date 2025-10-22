@@ -154,7 +154,7 @@ test-data:
 .PHONY: perf-test
 perf-test:
 	@echo "Running performance tests..."
-	go test -v -bench=. -benchmem -cpuprofile=cpu.prof -memprofile=mem.prof -p $(BENCH_PARALLEL) ./...
+	go test -v -bench=. -benchmem -timeout=5m -p $(BENCH_PARALLEL) ./...
 
 # プロファイル分析
 .PHONY: profile

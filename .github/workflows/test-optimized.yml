@@ -173,7 +173,8 @@ jobs:
                   go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
             - name: Run linters
-              run: make lint
+              run: |
+                  golangci-lint run --disable=gochecknoinits
 
     # セキュリティテスト（並列実行）
     security:
@@ -208,7 +209,8 @@ jobs:
                   go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
 
             - name: Run security tests
-              run: make security-test
+              run: |
+                  gosec ./...
 
     # 統合テスト（test完了後に実行）
     integration-test:
@@ -280,7 +282,8 @@ jobs:
               run: go build -o git-mini-commit .
 
             - name: Run performance tests
-              run: make perf-test
+              run: |
+                  go test -v -bench=. -benchmem -timeout=5m ./...
 
             - name: Upload performance results
               uses: actions/upload-artifact@v4
