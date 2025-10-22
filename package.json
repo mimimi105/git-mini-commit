@@ -1,6 +1,6 @@
 {
     "name": "git-mini-commit",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Git CLI extension for mini-commit workflow: local, small commits between staging and regular commit",
     "main": "bin/git-mini-commit",
     "bin": {
