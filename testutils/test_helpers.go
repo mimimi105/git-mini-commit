@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -193,27 +194,41 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 			return "", "", err
 		}
 		
-		// 現在のディレクトリから遡ってgit-mini-commitバイナリを探す
-		for {
-			binaryPath := filepath.Join(wd, "git-mini-commit")
-			if _, err := os.Stat(binaryPath); err == nil {
+	// 現在のディレクトリから遡ってgit-mini-commitバイナリを探す
+	for {
+		// Windows環境では .exe 拡張子を考慮
+		binaryPath := filepath.Join(wd, "git-mini-commit")
+		if _, err := os.Stat(binaryPath); err == nil {
+			projectDir = wd
+			break
+		}
+		
+		// Windows環境での .exe 拡張子をチェック
+		if runtime.GOOS == "windows" {
+			binaryPathExe := filepath.Join(wd, "git-mini-commit.exe")
+			if _, err := os.Stat(binaryPathExe); err == nil {
 				projectDir = wd
 				break
 			}
-			
-			parent := filepath.Dir(wd)
-			if parent == wd {
-				break
-			}
-			wd = parent
 		}
+		
+		parent := filepath.Dir(wd)
+		if parent == wd {
+			break
+		}
+		wd = parent
+	}
 	}
 	
 	if projectDir == "" {
 		return "", "", fmt.Errorf("git-mini-commit binary not found")
 	}
 	
+	// Windows環境では .exe 拡張子を考慮
 	binaryPath := filepath.Join(projectDir, "git-mini-commit")
+	if runtime.GOOS == "windows" {
+		binaryPath = filepath.Join(projectDir, "git-mini-commit.exe")
+	}
 	
 	if _, err := os.Stat(binaryPath); err != nil {
 		return "", "", fmt.Errorf("git-mini-commit binary not found at %s: %v", binaryPath, err)
@@ -228,6 +243,10 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	if c.repo != nil {
 		// ストレージディレクトリを明示的に設定
 		storageDir := filepath.Join(c.repo.RepoPath, ".git-mini-commit")
+		// Windows環境ではパス区切り文字を正規化
+		if runtime.GOOS == "windows" {
+			storageDir = filepath.ToSlash(storageDir)
+		}
 		cmd.Env = append(os.Environ(), "GIT_MINI_COMMIT_STORAGE_DIR="+storageDir)
 		// テスト用ディレクトリで実行
 		cmd.Dir = c.repo.RepoPath
