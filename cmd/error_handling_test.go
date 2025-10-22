@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -155,6 +156,11 @@ func TestCLIWithCorruptedStorage(t *testing.T) {
 }
 
 func TestCLIWithPermissionErrors(t *testing.T) {
+	// Windows環境ではこのテストをスキップ（パーミッション処理が異なる）
+	if runtime.GOOS == "windows" {
+		t.Skip("Skipping permission error test on Windows")
+	}
+	
 	// テスト用Gitリポジトリを作成
 	repo := testutils.NewTestGitRepo(t)
 	defer repo.Cleanup()

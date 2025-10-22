@@ -3,6 +3,8 @@ package git
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -243,8 +245,16 @@ func TestGetRepositoryRoot(t *testing.T) {
 		t.Fatalf("Failed to get current directory: %v", err)
 	}
 
-	if root != currentDir {
-		t.Errorf("Expected repository root '%s', but got '%s'", currentDir, root)
+	// Windows環境ではパス区切り文字を正規化して比較
+	expectedPath := currentDir
+	actualPath := root
+	if runtime.GOOS == "windows" {
+		expectedPath = filepath.ToSlash(expectedPath)
+		actualPath = filepath.ToSlash(actualPath)
+	}
+
+	if actualPath != expectedPath {
+		t.Errorf("Expected repository root '%s', but got '%s'", expectedPath, actualPath)
 	}
 }
 
