@@ -215,14 +215,7 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	
 	binaryPath := filepath.Join(projectDir, "git-mini-commit")
 	
-	// デバッグ情報を追加
-	fmt.Printf("DEBUG: Project directory: %s\n", projectDir)
-	fmt.Printf("DEBUG: Binary path: %s\n", binaryPath)
-	
-	// デバッグ情報を追加
-	fmt.Printf("DEBUG: Trying to execute binary at: %s\n", binaryPath)
 	if _, err := os.Stat(binaryPath); err != nil {
-		fmt.Printf("DEBUG: Binary not found at %s: %v\n", binaryPath, err)
 		return "", "", fmt.Errorf("git-mini-commit binary not found at %s: %v", binaryPath, err)
 	}
 	
@@ -233,11 +226,11 @@ func (c *TestCLI) RunCommand(args ...string) (string, string, error) {
 	
 	// テスト用のストレージディレクトリを設定
 	if c.repo != nil {
-		cmd.Env = append(os.Environ(), "GIT_MINI_COMMIT_STORAGE_DIR="+c.repo.RepoPath)
+		// ストレージディレクトリを明示的に設定
+		storageDir := filepath.Join(c.repo.RepoPath, ".git-mini-commit")
+		cmd.Env = append(os.Environ(), "GIT_MINI_COMMIT_STORAGE_DIR="+storageDir)
 		// テスト用ディレクトリで実行
 		cmd.Dir = c.repo.RepoPath
-		fmt.Printf("DEBUG: Setting storage dir to: %s\n", c.repo.RepoPath)
-		fmt.Printf("DEBUG: Setting working dir to: %s\n", c.repo.RepoPath)
 	}
 	
 	runErr := cmd.Run()

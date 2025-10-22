@@ -40,7 +40,6 @@ func TestCLIIntegration(t *testing.T) {
 
 	// 4. mini-commitのIDを抽出（listコマンドから取得）
 	listOutput := cli.AssertCommandSuccess(t, "list")
-	t.Logf("List output: %s", listOutput)
 	
 	lines := strings.Split(listOutput, "\n")
 	var miniCommitID string
@@ -57,8 +56,6 @@ func TestCLIIntegration(t *testing.T) {
 	if miniCommitID == "" {
 		t.Fatalf("Failed to extract mini-commit ID from list output: %s", listOutput)
 	}
-	
-	t.Logf("Extracted mini-commit ID: %s", miniCommitID)
 
 	// 5. mini-commitの差分を表示
 	output = cli.AssertCommandSuccess(t, "show", miniCommitID)
@@ -181,7 +178,6 @@ func TestCLIPopCommand(t *testing.T) {
 
 	// 3. mini-commitのIDを抽出（listコマンドから取得）
 	listOutput := cli.AssertCommandSuccess(t, "list")
-	t.Logf("List output: %s", listOutput)
 	
 	lines := strings.Split(listOutput, "\n")
 	var miniCommitID string
@@ -198,8 +194,6 @@ func TestCLIPopCommand(t *testing.T) {
 	if miniCommitID == "" {
 		t.Fatalf("Failed to extract mini-commit ID from list output: %s", listOutput)
 	}
-	
-	t.Logf("Extracted mini-commit ID: %s", miniCommitID)
 
 	// 4. 新しいクリーンなリポジトリを作成
 	cleanRepo := testutils.NewTestGitRepo(t)
